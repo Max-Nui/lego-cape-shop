@@ -1,4 +1,94 @@
+@font-face
+{
+    font-family: 'Old English';
+    src: url("/fonts/oldenglishtextmt.woff2") format("woff2"), url("/fonts/oldenglishtextmt.woff2") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face
+{
+    font-family: 'Poor Richard';
+    src: url("/fonts/PoorRichardOpti.woff2") format("woff2"), url("/fonts/PoorRichardOpti.woff2") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face
+{
+    font-family: 'Open Sans';
+    src: url("/fonts/OpenSans-VariableFont_wdth\,wght.woff2") format("woff2"), url("/fonts/OpenSans-VariableFont_wdth\,wght.woff2") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+
 body
 {
-    background-color: whitesmoke;
+    margin: 0;
+    background-color: burlywood;
+    .header
+    {
+        display: flex;
+        place-content: space-between;
+        background-color: blue;
+        img 
+        {
+            height: 10em;
+            padding: 1em;
+        }
+        nav 
+        {
+            text-align: center;
+            a 
+            {
+                text-decoration: none;
+                h1 
+                {
+                    font-family: 'Poor Richard', system-ui, sans-serif;
+                    font-size: 3em;
+                    color: rgb(48, 46, 46);
+                    margin: .1em;
+                    span 
+                    {
+                        font-family: 'Old English', system-ui, sans-serif;
+                        font-size: 1.3em;
+                    }
+                }
+            }
+            p 
+            {
+                color: rgb(48, 46, 46);
+                font-family: 'Poor Richard', system-ui, sans-serif;
+                font-style: italic;
+                margin: 0;
+            }
+            ul 
+            {
+                list-style-type: none;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;
+                li 
+                {
+                    font-family: 'Poor Richard', system-ui, sans-serif;
+                    text-transform: uppercase;
+                    padding: .7em;
+                    a 
+                    {
+                        text-decoration: none;
+                        color: orange;
+                    }
+                    a:hover, a:active 
+                    {
+                        color: black;
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+    }
 }

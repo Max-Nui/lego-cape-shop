@@ -1,3 +1,77 @@
+@font-face {
+  font-family: "Old English";
+  src: url("/fonts/oldenglishtextmt.woff2") format("woff2"), url("/fonts/oldenglishtextmt.woff2") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poor Richard";
+  src: url("/fonts/PoorRichardOpti.woff2") format("woff2"), url("/fonts/PoorRichardOpti.woff2") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Open Sans";
+  src: url("/fonts/OpenSans-VariableFont_wdth,wght.woff2") format("woff2"), url("/fonts/OpenSans-VariableFont_wdth,wght.woff2") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 body {
-  background-color: whitesmoke;
+  margin: 0;
+  background-color: burlywood;
+}
+body .header {
+  display: flex;
+  place-content: space-between;
+  background-color: blue;
+}
+body .header img {
+  height: 10em;
+  padding: 1em;
+}
+body .header nav {
+  text-align: center;
+}
+body .header nav a {
+  text-decoration: none;
+}
+body .header nav a h1 {
+  font-family: "Poor Richard", system-ui, sans-serif;
+  font-size: 3em;
+  color: rgb(48, 46, 46);
+  margin: 0.1em;
+}
+body .header nav a h1 span {
+  font-family: "Old English", system-ui, sans-serif;
+  font-size: 1.3em;
+}
+body .header nav p {
+  color: rgb(48, 46, 46);
+  font-family: "Poor Richard", system-ui, sans-serif;
+  font-style: italic;
+  margin: 0;
+}
+body .header nav ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+body .header nav ul li {
+  font-family: "Poor Richard", system-ui, sans-serif;
+  text-transform: uppercase;
+  padding: 0.7em;
+}
+body .header nav ul li a {
+  text-decoration: none;
+  color: orange;
+}
+body .header nav ul li a:hover, body .header nav ul li a:active {
+  color: black;
+  text-decoration: underline;
 }/*# sourceMappingURL=main.css.map */
