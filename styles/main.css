@@ -22,14 +22,17 @@
 body {
   margin: 0;
   background-color: burlywood;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 body .header {
   display: flex;
   place-content: space-between;
-  background-color: blue;
+  background-color: lightseagreen;
 }
 body .header img {
-  height: 10em;
+  height: 9em;
   padding: 1em;
 }
 body .header nav {
@@ -74,4 +77,37 @@ body .header nav ul li a {
 body .header nav ul li a:hover, body .header nav ul li a:active {
   color: black;
   text-decoration: underline;
+}
+body .main {
+  flex: 1 0 auto;
+}
+body .footer {
+  background-color: rgba(82, 81, 81, 0.9);
+}
+body .footer div ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+body .footer div ul li {
+  font-family: "Poor Richard", system-ui, sans-serif;
+  text-transform: uppercase;
+  padding: 0.7em;
+}
+body .footer div ul li a {
+  text-decoration: none;
+  color: orange;
+}
+body .footer div ul li a:hover, body .footer div ul li a:active {
+  color: black;
+  text-decoration: underline;
+}
+body .footer div p {
+  font-family: "Poor Richard", system-ui, sans-serif;
+  text-align: center;
+  font-style: italic;
+  font-size: 0.8em;
 }/*# sourceMappingURL=main.css.map */

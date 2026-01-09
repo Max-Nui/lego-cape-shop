@@ -28,14 +28,17 @@ body
 {
     margin: 0;
     background-color: burlywood;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
     .header
     {
         display: flex;
         place-content: space-between;
-        background-color: blue;
+        background-color: lightseagreen;
         img 
         {
-            height: 10em;
+            height: 9em;
             padding: 1em;
         }
         nav 
@@ -88,6 +91,51 @@ body
                         text-decoration: underline;
                     }
                 }
+            }
+        }
+    }
+
+    .main
+    {
+        flex: 1 0 auto;
+    }
+
+    .footer
+    {
+        background-color: rgba(82, 81, 81, 0.9);
+        div 
+        {
+            ul 
+            {
+                list-style-type: none;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;
+                li 
+                {
+                    font-family: 'Poor Richard', system-ui, sans-serif;
+                    text-transform: uppercase;
+                    padding: .7em;
+                    a 
+                    {
+                        text-decoration: none;
+                        color: orange;
+                    }
+                    a:hover, a:active 
+                    {
+                        color: black;
+                        text-decoration: underline;
+                    }
+                }
+            }
+            p 
+            {
+                font-family: 'Poor Richard', system-ui, sans-serif;
+                text-align: center;
+                font-style: italic;
+                font-size: .8em;
             }
         }
     }
