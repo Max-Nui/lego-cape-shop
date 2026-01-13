@@ -96,6 +96,7 @@ body .main img {
 body .main h2 {
   text-align: center;
   text-transform: uppercase;
+  font-family: "Poor Richard", system-ui, sans-serif;
 }
 body .main .gallery {
   aspect-ratio: 3/2;
