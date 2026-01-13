@@ -27,13 +27,8 @@ body {
   min-height: 100%;
 }
 body .header {
-  display: flex;
-  place-content: space-between;
+  align-items: center;
   background-color: lightseagreen;
-}
-body .header img {
-  height: 9em;
-  padding: 1em;
 }
 body .header nav {
   text-align: center;
@@ -43,7 +38,7 @@ body .header nav a {
 }
 body .header nav a h1 {
   font-family: "Poor Richard", system-ui, sans-serif;
-  font-size: 3em;
+  font-size: clamp(16px, 8vw, 70px);
   color: rgb(48, 46, 46);
   margin: 0.1em;
 }
@@ -60,15 +55,13 @@ body .header nav p {
 body .header nav ul {
   list-style-type: none;
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start;
 }
 body .header nav ul li {
   font-family: "Poor Richard", system-ui, sans-serif;
   text-transform: uppercase;
-  padding: 0.7em;
+  padding: 0.5em;
 }
 body .header nav ul li a {
   text-decoration: none;
@@ -78,8 +71,23 @@ body .header nav ul li a:hover, body .header nav ul li a:active {
   color: black;
   text-decoration: underline;
 }
+body .header nav ul li img {
+  height: 2em;
+}
+body .header nav ul li::after {
+  content: "|";
+  margin-left: 1em;
+}
+body .header nav ul li:last-child::after {
+  content: "";
+}
 body .main {
   flex: 1 0 auto;
+}
+body .main img {
+  width: 100vw;
+  display: block;
+  margin: auto;
 }
 body .footer {
   background-color: rgba(82, 81, 81, 0.9);
