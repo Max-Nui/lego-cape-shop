@@ -115,6 +115,35 @@ body
             margin: auto;
             
         }
+        h2 
+        {
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .gallery
+        {
+            aspect-ratio: 3/2;
+            position: relative;
+            width: 100vw;
+            max-height: 80vh;
+            overflow: hidden;
+
+            img 
+            {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0;
+                transition: opacity 0.8s ease-in-out;
+            }
+            img.active 
+            {
+                opacity: 1;
+                position: relative;
+            }
+        }
     }
 
     .footer
