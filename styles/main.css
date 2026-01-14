@@ -98,6 +98,10 @@ body .main h2 {
   text-transform: uppercase;
   font-family: "Poor Richard", system-ui, sans-serif;
 }
+body .main p {
+  text-align: center;
+  font-family: "Open Sans", system-ui, sans-serif;
+}
 body .main .gallery {
   aspect-ratio: 3/2;
   position: relative;
@@ -118,6 +122,40 @@ body .main .gallery img {
 body .main .gallery img.active {
   opacity: 1;
   position: relative;
+}
+body .main .characterbio {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+}
+body .main .characterbio div img {
+  width: 40vw;
+  padding-right: 1em;
+}
+body .main .characterbio div p {
+  margin: 1em;
+  font-size: 1vw;
+}
+body .main .productgallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-left: 5em;
+  margin-right: 5em;
+}
+body .main .productgallery .product {
+  background-color: whitesmoke;
+  margin: 1em;
+}
+body .main .productgallery .product img {
+  width: 18em;
+}
+body .main .productgallery .product .productprice {
+  display: flex;
+  justify-content: center;
+}
+body .main .productgallery .product .productprice img {
+  width: 3em;
 }
 body .footer {
   background-color: rgba(82, 81, 81, 0.9);

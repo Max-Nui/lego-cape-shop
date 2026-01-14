@@ -121,6 +121,11 @@ body
             text-transform: uppercase;
             font-family: 'Poor Richard', system-ui, sans-serif;
         }
+        p 
+        {
+            text-align: center;
+            font-family: 'Open Sans', system-ui, sans-serif;
+        }
         .gallery
         {
             aspect-ratio: 3/2;
@@ -143,6 +148,51 @@ body
             {
                 opacity: 1;
                 position: relative;
+            }
+        }
+        .characterbio
+        {
+            display: grid;
+            grid-template-columns: auto auto;
+            align-items: center;
+            div 
+            {
+                img 
+                {
+                    width: 40vw;
+                    padding-right: 1em;
+                }
+                p 
+                {
+                    margin: 1em;
+                    font-size: 1vw;
+                }
+            }
+        }
+        .productgallery
+        {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-left: 5em;
+            margin-right: 5em;
+            .product 
+            {
+                background-color: whitesmoke;
+                margin: 1em;
+                img 
+                {
+                    width: 18em;
+                }
+                .productprice
+                {
+                    display: flex;
+                    justify-content: center;
+                    img 
+                    {
+                        width: 3em;
+                    }
+                }
             }
         }
     }
