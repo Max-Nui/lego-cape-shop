@@ -21,7 +21,11 @@
 }
 body {
   margin: 0;
-  background-color: burlywood;
+  background-image: url("../images/papertexture.jpg");
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
   display: flex;
   flex-direction: column;
   min-height: 100%;
@@ -53,6 +57,7 @@ body .header nav p {
   font-family: "Poor Richard", system-ui, sans-serif;
   font-style: italic;
   margin: 0;
+  font-size: calc(70% + 0.5vw);
 }
 body .header nav ul {
   list-style-type: none;
@@ -97,9 +102,11 @@ body .main h2 {
   text-align: center;
   text-transform: uppercase;
   font-family: "Poor Richard", system-ui, sans-serif;
+  font-size: calc(100% + 1vw);
 }
 body .main p {
   text-align: center;
+  font-size: calc(50% + 0.5vw);
   font-family: "Open Sans", system-ui, sans-serif;
 }
 body .main .gallery {
@@ -124,24 +131,34 @@ body .main .gallery img.active {
   position: relative;
 }
 body .main .characterbio {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
-body .main .characterbio div img {
-  width: 40vw;
-  padding-right: 1em;
+body .main .characterbio .charactertext {
+  flex: 20em;
 }
-body .main .characterbio div p {
+body .main .characterbio .charactertext p {
+  min-width: 15em;
   margin: 1em;
-  font-size: 1vw;
+  font-size: calc(50% + 0.5vw);
+}
+body .main .characterbio img {
+  width: 60vw;
+  height: 30vw;
+  min-height: 200px;
+  min-width: 200px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: left 0;
+     object-position: left 0;
 }
 body .main .productgallery {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  margin-left: 5em;
-  margin-right: 5em;
+  margin-left: 3em;
+  margin-right: 3em;
 }
 body .main .productgallery .product {
   background-color: whitesmoke;
@@ -159,6 +176,9 @@ body .main .productgallery .product .productprice img {
 }
 body .footer {
   background-color: rgba(82, 81, 81, 0.9);
+}
+body .footer div {
+  margin-top: 1em;
 }
 body .footer div ul {
   list-style-type: none;
