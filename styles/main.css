@@ -167,11 +167,18 @@ body .main .productgallery .product {
 body .main .productgallery .product img {
   width: 18em;
 }
+body .main .productgallery .product p {
+  font-size: 20px;
+}
 body .main .productgallery .product .productprice {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
-body .main .productgallery .product .productprice img {
+body .main .productgallery .product .productprice p {
+  font-size: 20px;
+}
+body .main .productgallery .product .productprice a img {
   width: 3em;
 }
 body .footer {

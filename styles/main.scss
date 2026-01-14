@@ -195,17 +195,29 @@ body
             {
                 background-color: whitesmoke;
                 margin: 1em;
-                img 
+                img
                 {
                     width: 18em;
+                }
+                p 
+                {
+                    font-size: 20px;
                 }
                 .productprice
                 {
                     display: flex;
                     justify-content: center;
-                    img 
+                    align-items: center;
+                    p
                     {
-                        width: 3em;
+                        font-size: 20px;
+                    }
+                    a 
+                    {
+                        img 
+                        {
+                            width: 3em;
+                        }
                     }
                 }
             }
