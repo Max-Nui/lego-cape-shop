@@ -237,6 +237,7 @@ body
                 flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: center;
+                align-items: center;
                 padding: 0;
                 margin: 0 auto;
                 li 
@@ -253,6 +254,10 @@ body
                     {
                         color: black;
                         text-decoration: underline;
+                    }
+                    img 
+                    {
+                        height: 1em;
                     }
                 }
                 li::after 

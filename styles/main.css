@@ -193,6 +193,7 @@ body .footer div ul {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   padding: 0;
   margin: 0 auto;
 }
@@ -208,6 +209,9 @@ body .footer div ul li a {
 body .footer div ul li a:hover, body .footer div ul li a:active {
   color: black;
   text-decoration: underline;
+}
+body .footer div ul li img {
+  height: 1em;
 }
 body .footer div ul li::after {
   content: "|";
