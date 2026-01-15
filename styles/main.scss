@@ -128,6 +128,12 @@ body
             font-family: 'Poor Richard', system-ui, sans-serif;
             font-size: calc(100% + 1vw);
         }
+        h3 
+        {
+            text-transform: uppercase;
+            font-family: 'Poor Richard', system-ui, sans-serif;
+            font-size: calc(100% + .2vw);
+        }
         p 
         {
             text-align: center;
@@ -221,6 +227,156 @@ body
                         
                     }
                 }
+            }
+        }
+        .itemblock
+        {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            .itemblock-left
+            {
+                .item-gallery
+                {
+                    aspect-ratio: 1/1;
+                    position: relative;
+                    width: 50vw;
+                    min-width: 250px;
+                    max-width: 600px;
+                    overflow: hidden;
+                    img 
+                    {
+                        position: absolute;
+                        inset: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        opacity: 0;
+                        transition: opacity 0.8s ease-in-out;
+                    }
+                    img.active 
+                    {
+                        opacity: 1;
+                        position: relative;
+                    }
+                    .gallery-btn 
+                    {
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background: rgba(0, 0, 0, 0.5);
+                        color: white;
+                        border: none;
+                        padding: 0.5em 0.8em;
+                        cursor: pointer;
+                        font-size: 1.2em;
+                        z-index: 2;
+
+                        &:hover 
+                        {
+                            background: rgba(0, 0, 0, 0.8);
+                        }
+                    }
+                    .prev 
+                    {
+                        left: 0;
+                    }
+
+                    .next 
+                    {
+                        right: 0;
+                    }
+                }
+            }
+            .itemblock-right
+            {
+                margin-left: 20px;
+                max-width: 40vw;
+                min-width: 250px;
+                p
+                {
+                    text-align: left;
+                }
+                h3 
+                {
+                    text-align: left;
+                }
+                
+                .color-options {
+                    display: flex;
+                    flex-wrap: wrap;
+                    list-style: none;
+                    align-items: center;
+                    padding: 0;
+                    margin: 0;
+                    margin-bottom: 1em;
+                    li {
+                        padding: 0.5em;
+                        cursor: pointer;
+                        transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+                        img {
+                            width: 2em;
+                            display: block;
+                        }
+
+                        &.selected {
+                            transform: scale(1.5);
+                        }
+                    }
+                }
+                
+                .quantity-selector 
+                {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0;
+
+                    .qty-btn 
+                    {
+                        background-color: lightseagreen;
+                        color: white;
+                        border: none;
+                        padding: 0.4em 0.7em;
+                        font-size: 1.2em;
+                        cursor: pointer;
+
+                        &:hover 
+                        {
+                            background-color: darken(lightseagreen, 10%);
+                        }
+                    }
+                    .qty-value 
+                    {
+                        background-color: white;
+                        padding: 0.4em 0.7em;
+                        min-width: 2ch;
+                        text-align: center;
+                        font-size: 1.1em;
+                        font-family: 'Open Sans', system-ui, sans-serif;
+                    }
+                }
+                .add-to-cart-button
+                {
+                    border: none;
+                    display: flex;
+                    margin: 1em 0 0 0;
+                    background-color: lightseagreen;
+                    h3 
+                    {
+                        margin: 1em;
+                    }
+                    img 
+                    {
+                        width: 2em;
+                        margin-right: 1em;
+                    }
+                }
+                .add-to-cart-button:hover, .add-to-cart-button:active
+                {
+                    background-color: darken(lightseagreen, 10%);
+                }
+
             }
         }
     }
