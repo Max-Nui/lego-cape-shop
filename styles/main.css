@@ -160,26 +160,29 @@ body .main .productgallery {
   margin-left: 3em;
   margin-right: 3em;
 }
-body .main .productgallery .product {
+body .main .productgallery a {
+  text-decoration: none;
+  color: black;
+}
+body .main .productgallery a .product {
   background-color: whitesmoke;
   margin: 1em;
 }
-body .main .productgallery .product img {
+body .main .productgallery a .product img {
   width: 18em;
 }
-body .main .productgallery .product p {
+body .main .productgallery a .product p {
   font-size: 20px;
+  padding-top: 0.7em;
 }
-body .main .productgallery .product .productprice {
+body .main .productgallery a .product .productprice {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-body .main .productgallery .product .productprice p {
+body .main .productgallery a .product .productprice p {
   font-size: 20px;
-}
-body .main .productgallery .product .productprice a img {
-  width: 3em;
+  padding-top: 0;
 }
 body .footer {
   background-color: rgba(82, 81, 81, 0.9);

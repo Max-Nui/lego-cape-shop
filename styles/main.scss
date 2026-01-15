@@ -191,33 +191,34 @@ body
             flex-wrap: wrap;
             margin-left: 3em;
             margin-right: 3em;
-            .product 
+            a 
             {
-                background-color: whitesmoke;
-                margin: 1em;
-                img
+                text-decoration: none;
+                color: black;
+                .product 
                 {
-                    width: 18em;
-                }
-                p 
-                {
-                    font-size: 20px;
-                }
-                .productprice
-                {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    p
+                    background-color: whitesmoke;
+                    margin: 1em;
+                    img
+                    {
+                        width: 18em;
+                    }
+                    p 
                     {
                         font-size: 20px;
+                        padding-top: .7em;
                     }
-                    a 
+                    .productprice
                     {
-                        img 
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        p
                         {
-                            width: 3em;
+                            font-size: 20px;
+                            padding-top: 0;
                         }
+                        
                     }
                 }
             }
