@@ -1,3 +1,42 @@
+//==================================================
+// CART CORE SETUP
+//==================================================
+const Cart = 
+{
+    storageKey: "cart",
+
+    get() 
+    {
+        return JSON.parse(localStorage.getItem(this.storageKey)) || [];
+    },
+
+    set(cart) 
+    {
+        localStorage.setItem(this.storageKey, JSON.stringify(cart));
+    }
+};
+
+//Add Item to Cart
+Cart.addItem = function ({id, name, price, color, quantity})
+{
+    const cart = this.get();
+
+    const existing = cart.find(item => item.id === id && item.color === color);
+
+    if(existing)
+    {
+        existing.quantity += quantity;
+    }
+    else
+    {
+        cart.push({id, name, price, color, quantity});
+    }
+    this.set(cart);
+}
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // =====================================================
@@ -106,5 +145,103 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // =====================================================
+    // CART RENDERING
+    // =====================================================
+    function getCart() 
+    {
+        return Cart.get();
+    }
 
+    function renderCart() 
+    {
+        const cartItemsEl = document.querySelector(".cart-items");
+        const totalEl = document.querySelector(".cart-total");
+        const warningEl = document.querySelector(".cart-warning");
+
+        if (!cartItemsEl || !totalEl) return;
+
+        const cart = getCart();
+        cartItemsEl.innerHTML = "";
+
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+
+            const row = document.createElement("div");
+            row.className = "cart-item";
+            row.innerHTML = `
+                <div class="cart-item-details">
+                <p><strong>${item.name}</strong></p>
+                <p>Color: ${item.color}</p>
+                <p>Qty: ${item.quantity}</p>
+                <p>$${itemTotal.toFixed(2)}</p>
+                </div>
+                <button data-index="${index}" class="remove-item">Remove</button>
+                
+            `;
+
+            cartItemsEl.appendChild(row);
+        });
+
+        totalEl.textContent = `Total: $${total.toFixed(2)} USD`;
+
+        // Minimum order enforcement
+        if (total < 5) {
+            warningEl?.classList.remove("hidden");
+        } else {
+            warningEl?.classList.add("hidden");
+        }
+
+        setupRemoveButtons();
+    }
+
+    function setupRemoveButtons() 
+    {
+        document.querySelectorAll(".remove-item").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const index = btn.dataset.index;
+                const cart = getCart();
+                cart.splice(index, 1);
+                localStorage.setItem("cart", JSON.stringify(cart));
+                renderCart();
+            });
+        });
+    }
+
+    const addToCartBtn = document.querySelector(".add-to-cart-button");
+
+    if (addToCartBtn) 
+        {
+            addToCartBtn.addEventListener("click", () => {
+                const quantity = parseInt(
+                    document.querySelector(".qty-value").textContent,
+                    10
+                );
+
+                const selectedColorEl =
+                    document.querySelector(".color-options li.selected");
+
+                if (!selectedColorEl) {
+                    alert("Please select a color.");
+                    return;
+                }
+
+                Cart.addItem({
+                    id: "standard-cape",
+                    name: "Standard Cape",
+                    price: 0.5,
+                    color: selectedColorEl.dataset.color,
+                    quantity
+                });
+
+                alert("Added to cart");
+            });
+        }
+
+
+
+    renderCart();
 });

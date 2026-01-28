@@ -309,6 +309,28 @@ body .main .itemblock .itemblock-right .add-to-cart-button img {
 body .main .itemblock .itemblock-right .add-to-cart-button:hover, body .main .itemblock .itemblock-right .add-to-cart-button:active {
   background-color: rgb(24.2285714286, 134.7714285714, 128.7142857143);
 }
+body .main .cart-summary .hidden {
+  display: none;
+}
+body .main .cart-items .cart-item {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1vw;
+}
+body .main .cart-items .cart-item .cart-item-details {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+}
+body .main .cart-items .cart-item .remove-item {
+  background-color: crimson;
+  color: white;
+  border: none;
+  padding: 0.3em 1em;
+  cursor: pointer;
+  font-family: "Open Sans", system-ui, sans-serif;
+  text-transform: uppercase;
+}
 body .footer {
   background-color: rgba(82, 81, 81, 0.9);
 }

@@ -379,6 +379,39 @@ body
 
             }
         }
+        .cart-summary
+        {
+            .hidden
+            {
+                display: none;
+            }
+        }
+        .cart-items
+        {
+            .cart-item
+            {
+                //display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 1vw;
+                .cart-item-details
+                {
+                    display: flex;
+                    gap: 1em;
+                    justify-content: center;
+                }
+                .remove-item
+                {
+                    background-color: crimson;
+                    color: white;
+                    border: none;
+                    padding: 0.3em 1em;
+                    cursor: pointer;
+                    font-family: 'Open Sans', system-ui, sans-serif;
+                    text-transform: uppercase;
+                }
+            }
+        }
     }
 
     .footer
