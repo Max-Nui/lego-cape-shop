@@ -39,6 +39,8 @@ Cart.addItem = function ({id, name, price, color, quantity})
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    let paypalRendered = false;
+
     // =====================================================
     // HOME PAGE GALLERY (auto-advance)
     // =====================================================
@@ -97,21 +99,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const incrementBtn = selector.querySelector(".increment");
         const decrementBtn = selector.querySelector(".decrement");
 
-        let quantity = parseInt(selector.dataset.qty, 10) || 1;
+        // Use a property on the element
+        selector._quantity = parseInt(selector.dataset.qty, 10) || 1;
 
         function updateDisplay() {
-            valueEl.textContent = quantity;
-            selector.dataset.qty = quantity;
+            valueEl.textContent = selector._quantity;
+            selector.dataset.qty = selector._quantity;
         }
 
         incrementBtn.addEventListener("click", () => {
-            quantity += 1;
+            selector._quantity += 1;
             updateDisplay();
         });
 
         decrementBtn.addEventListener("click", () => {
-            if (quantity > 1) {
-                quantity -= 1;
+            if (selector._quantity > 1) {
+                selector._quantity -= 1;
                 updateDisplay();
             }
         });
@@ -189,11 +192,26 @@ document.addEventListener("DOMContentLoaded", () => {
         totalEl.textContent = `Total: $${total.toFixed(2)} USD`;
 
         // Minimum order enforcement
+        const paypalContainer = document.querySelector("#paypal-button-container");
+
         if (total < 5) {
             warningEl?.classList.remove("hidden");
+
+            // If PayPal is currently rendered, remove it
+            if (paypalRendered) {
+                paypalContainer.innerHTML = ""; // clears the button
+                paypalRendered = false;
+            }
+
         } else {
             warningEl?.classList.add("hidden");
+
+            if (!paypalRendered) {
+                renderPayPalButton();
+                paypalRendered = true;
+            }
         }
+
 
         setupRemoveButtons();
     }
@@ -237,11 +255,97 @@ document.addEventListener("DOMContentLoaded", () => {
                     quantity
                 });
 
+                // Reset the quantity counter
+                const quantitySelector = document.querySelector(".quantity-selector");
+                const qtyValueEl = quantitySelector?.querySelector(".qty-value");
+
+                if (quantitySelector && qtyValueEl) {
+                    qtyValueEl.textContent = "0";
+                    quantitySelector.dataset.qty = 0;
+
+                    // IMPORTANT: also update the closure variable used by increment/decrement
+                    quantitySelector._quantity = 0;      // new property to track state
+                }
+
                 alert("Added to cart");
             });
         }
 
 
+       function buildPayPalItems(cart) 
+       {
+        return cart.map(item => ({
+                name: `${item.name} (${item.color})`,
+                unit_amount: {
+                    currency_code: "USD",
+                    value: item.price.toFixed(2)
+                },
+                quantity: item.quantity.toString()
+            }));
+        } 
 
+        function calculateCartTotal(cart) {
+            return cart.reduce((sum, item) => {
+                return sum + item.price * item.quantity;
+            }, 0).toFixed(2);
+        }
+
+
+    
+    //=====================================================================
+    //Paypal Render Function
+    //=====================================================================
+    function renderPayPalButton() {
+        const container = document.querySelector("#paypal-button-container");
+        if (!container || typeof paypal === "undefined") return;
+
+        // Clear previous button (important!)
+        container.innerHTML = "";
+
+        paypal.Buttons({
+            createOrder: function (data, actions) {
+                const cart = Cart.get();
+
+                if (cart.length === 0) {
+                    alert("Your cart is empty.");
+                    return;
+                }
+
+                const total = calculateCartTotal(cart);
+                const items = buildPayPalItems(cart);
+
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            currency_code: "USD",
+                            value: total,
+                            breakdown: {
+                                item_total: {
+                                    currency_code: "USD",
+                                    value: total
+                                }
+                            }
+                        },
+                        items: items
+                    }]
+                });
+            },
+
+            onApprove: function (data, actions) {
+                return actions.order.capture().then(function (details) {
+                    alert(`Payment completed by ${details.payer.name.given_name}`);
+
+                    Cart.set([]);
+                    renderCart();
+                });
+            },
+
+            onError: function (err) {
+                console.error("PayPal Checkout Error:", err);
+                alert("Something went wrong with the payment.");
+            }
+        }).render("#paypal-button-container");
+
+    }
     renderCart();
 });

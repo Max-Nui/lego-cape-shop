@@ -309,12 +309,29 @@ body .main .itemblock .itemblock-right .add-to-cart-button img {
 body .main .itemblock .itemblock-right .add-to-cart-button:hover, body .main .itemblock .itemblock-right .add-to-cart-button:active {
   background-color: rgb(24.2285714286, 134.7714285714, 128.7142857143);
 }
+body .main .cart-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 body .main .cart-summary .hidden {
   display: none;
 }
-body .main .cart-items .cart-item {
+body .main .cart-summary #paypal-button-container {
+  display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 1em;
+}
+body .main .cart-summary #paypal-button-container iframe {
+  display: block;
+  margin: 0 auto;
+}
+body .main .cart-items .cart-item {
+  display: flex;
+  justify-content: center;
   gap: 1vw;
 }
 body .main .cart-items .cart-item .cart-item-details {
