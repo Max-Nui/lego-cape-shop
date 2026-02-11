@@ -467,11 +467,12 @@ body
             }
             button 
             {
+                font-family: 'Poor Richard', system-ui, sans-serif;
                 display: flex;
                 margin: auto;
                 margin-top: 1em;
                 padding: .3em;
-                font-size: 2em;
+                font-size: 1.5em;
                 background-color: orange;
                 border-radius: .2em;
                 border: none;
@@ -482,6 +483,17 @@ body
             {
                 background-color: lightseagreen;
                 color: whitesmoke;
+            }
+            
+        }
+        .info-text-block 
+        {
+            display: block;
+            margin-left: 15vw;
+            margin-right: 15vw;
+            p 
+            {
+                text-align: left;
             }
         }
     }
