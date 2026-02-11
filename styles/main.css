@@ -348,6 +348,52 @@ body .main .cart-items .cart-item .remove-item {
   font-family: "Open Sans", system-ui, sans-serif;
   text-transform: uppercase;
 }
+body .main form {
+  max-width: 70vw;
+  margin: auto;
+  margin-bottom: 2em;
+  display: block;
+}
+body .main form fieldset {
+  display: flex;
+  gap: 2em;
+  border: none;
+  margin: 0;
+}
+body .main form label {
+  margin-bottom: 1em;
+}
+body .main form label input {
+  width: 100%;
+  padding: 0.6em;
+  margin-top: 0.25em;
+}
+body .main form label textarea {
+  width: 100%;
+  padding: 0.6em;
+  margin-top: 0.25em;
+}
+body .main form label select {
+  width: 100%;
+  padding: 0.6em;
+  font-family: "Open Sans", system-ui, sans-serif;
+}
+body .main form button {
+  display: flex;
+  margin: auto;
+  margin-top: 1em;
+  padding: 0.3em;
+  font-size: 2em;
+  background-color: orange;
+  border-radius: 0.2em;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+body .main form button:hover, body .main form button:active {
+  background-color: lightseagreen;
+  color: whitesmoke;
+}
 body .footer {
   background-color: rgba(82, 81, 81, 0.9);
 }

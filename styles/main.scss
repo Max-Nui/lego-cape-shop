@@ -428,6 +428,62 @@ body
                 }
             }
         }
+
+        form 
+        {
+            max-width: 70vw;
+            margin: auto;
+            margin-bottom: 2em;
+            display: block;
+
+            fieldset
+            {
+                display: flex;
+                gap: 2em;
+                border: none;
+                margin: 0;
+            }
+            label 
+            {
+                margin-bottom: 1em;
+                input 
+                {
+                    width: 100%;
+                    padding: .6em;
+                    margin-top: .25em;
+                }
+                textarea
+                {
+                    width: 100%;
+                    padding: .6em;
+                    margin-top: .25em;
+                }
+                select 
+                {
+                    width: 100%;
+                    padding: .6em;
+                    font-family: 'Open Sans', system-ui, sans-serif;
+                }
+            }
+            button 
+            {
+                display: flex;
+                margin: auto;
+                margin-top: 1em;
+                padding: .3em;
+                font-size: 2em;
+                background-color: orange;
+                border-radius: .2em;
+                border: none;
+                cursor: pointer;
+                text-transform: uppercase;
+            }
+            button:hover, button:active
+            {
+                background-color: lightseagreen;
+                color: whitesmoke;
+            }
+        }
     }
 
     .footer

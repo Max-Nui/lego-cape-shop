@@ -27,37 +27,8 @@
     </div>
 
     <div class="main">
-        <h2>Custom</h2>
-        <p>Need a custom piece from the Tailor? Fill out the form below and we'll get back to you ASAP!</p>
-        <form name="custom-request" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" value="Custom request submitted!" action="/pages/form-submitted.html">
-            <!--Required for Netlify-->
-            <input type="hidden" name="contact" value="contact">
-
-            <!--Honeypot-->
-            <p hidden>
-            <label>
-                Don't fill this out unless you are a dirty fucking clanker:
-                <input name="bot-field">
-            </label>
-            </p>
-            <h3>
-                <label>First Name:* <input type="text" name="first-name" required/></label>
-                <label>Last Name:* <input type="text" name="last-name" required/></label>
-            </h3>
-            <h3>
-                <label>Email Address:* <input type="email" name="email" required/></label>
-            </h3>
-            <h3>
-                <label>Attach an image of the pattern (optional): <input type="file" name="image-attach" accept="image/jpg, image/png, image/svg"/></label>
-            </h3>
-            <h3>
-                <label>Description of Request:* <textarea name="message" required rows="12"></textarea></label>
-            </h3>
-            <h3>
-                <button type="submit">Submit</button>
-            </h3>
-
-        </form>
+        <h2>Form Submitted!</h2>
+        <p>Your custom request has been submitted successfully! The Tailor will be reaching out to you shortly!</p>
     </div>
 
 
