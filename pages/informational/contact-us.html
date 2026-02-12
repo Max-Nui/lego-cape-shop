@@ -28,7 +28,32 @@
 
     <div class="main">
         <h2>Contact Us</h2>
+        <p>Use the form below to contact us for any reason! If you are looking to request a custom piece, please use the CUSTOM form instead.</p>
+        <form name="contact-us" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" value="Contact form submitted!" action="/pages/form-submitted.html">
+            <!--Required for Netlify-->
+            <input type="hidden" name="contact" value="contact">
 
+            <!--Honeypot-->
+            <p hidden>
+            <label>
+                Don't fill this out unless you are a dirty fucking clanker:
+                <input name="bot-field">
+            </label>
+            </p>
+            <h3>
+                <label>First Name:* <input type="text" name="first-name" required/></label>
+                <label>Last Name:* <input type="text" name="last-name" required/></label>
+            </h3>
+            <h3>
+                <label>Email Address:* <input type="email" name="email" required/></label>
+            </h3>
+            <h3>
+                <label>Message Content:* <textarea name="message" required rows="12"></textarea></label>
+            </h3>
+            <h3>
+                <button type="submit">Submit</button>
+            </h3>
+        </form>
     </div>
 
 

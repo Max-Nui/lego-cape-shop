@@ -403,6 +403,9 @@ body .main .info-text-block {
 body .main .info-text-block p {
   text-align: left;
 }
+body .main .info-text-block a p {
+  text-align: center;
+}
 body .footer {
   background-color: rgba(82, 81, 81, 0.9);
 }
