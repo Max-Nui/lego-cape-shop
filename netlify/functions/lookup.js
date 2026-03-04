@@ -27,6 +27,14 @@ exports.handler = async (event) => {
     });
     const orderData = await orderResponse.json();
 
+    // NEW DEBUG: See what PayPal is actually sending
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ 
+            fullResponse: orderData 
+        })
+    };
+
     // 3. THE DEEP SCAN
     // Look in every possible place PayPal stores email
     const foundEmail = 
