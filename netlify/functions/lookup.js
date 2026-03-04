@@ -9,7 +9,7 @@ exports.handler = async (event) => {
     const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
     const PAYPAL_API = 'https://api-m.sandbox.paypal.com';
 
-    // 1. Get Access Token
+    // 1. Auth Handshake
     const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
     const tokenResponse = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
       method: 'POST',
@@ -19,39 +19,43 @@ exports.handler = async (event) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
-    
-    const tokenData = await tokenResponse.json();
-    const accessToken = tokenData.access_token;
+    const { access_token } = await tokenResponse.json();
 
-    // 2. Get Order Details
+    // 2. Fetch Order Details
     const orderResponse = await fetch(`${PAYPAL_API}/v2/checkout/orders/${orderID}`, {
-      headers: { 'Authorization': `Bearer ${accessToken}` }
+      headers: { 'Authorization': `Bearer ${access_token}` }
     });
-    
     const orderData = await orderResponse.json();
 
-    // --- DEEP SEARCH FOR EMAIL ---
-    const payerEmail = orderData.payer?.email_address;
-    const shippingEmail = orderData.purchase_units?.[0]?.shipping?.email_address;
-    const infoEmail = orderData.purchase_units?.[0]?.payee?.email_address;
+    // 3. THE DEEP SCAN
+    // Look in every possible place PayPal stores email
+    const foundEmail = 
+        orderData.payer?.email_address || 
+        orderData.purchase_units?.[0]?.shipping?.email_address ||
+        orderData.purchase_units?.[0]?.payee?.email_address || 
+        "NOT_FOUND";
 
-    // Use whichever one we find first
-    const paypalEmail = (payerEmail || shippingEmail || infoEmail || "").toLowerCase();
-    
-    console.log("Found PayPal Email:", paypalEmail);
-
-    if (!paypalEmail) {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ error: "PayPal did not return an email for this order record." })
-      };
+    // 4. Detailed Error Reporting
+    if (foundEmail === "NOT_FOUND") {
+        return {
+            statusCode: 404,
+            body: JSON.stringify({ 
+                error: "Email missing from PayPal record.",
+                debug: {
+                    status: orderData.status,
+                    hasPayer: !!orderData.payer,
+                    hasPurchaseUnits: !!orderData.purchase_units
+                }
+            })
+        };
     }
 
-    if (paypalEmail !== userEmail.toLowerCase()) {
+    if (foundEmail.toLowerCase() !== userEmail.toLowerCase()) {
       return {
         statusCode: 403,
         body: JSON.stringify({ 
-            error: `Email Mismatch. You entered: ${userEmail}. PayPal has: ${paypalEmail}` 
+            error: `Email Mismatch.`,
+            found: foundEmail // Sending this back for your testing
         })
       };
     }
@@ -65,7 +69,6 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
-    console.error("Function Error:", error);
-    return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
+    return { statusCode: 500, body: JSON.stringify({ error: "Server Error" }) };
   }
 };
