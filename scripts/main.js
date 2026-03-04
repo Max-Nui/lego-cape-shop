@@ -184,6 +184,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const addToCartBtn = document.querySelector(".add-to-cart-button");
     if (addToCartBtn) {
         addToCartBtn.addEventListener("click", () => {
+            const id = addToCartBtn.dataset.id;
+            const name = addToCartBtn.dataset.name;
+            const price = parseFloat(addToCartBtn.dataset.price);
             const qtyVal = document.querySelector(".qty-value")?.textContent || "1";
             const quantity = parseInt(qtyVal, 10);
             const selectedColorEl = document.querySelector(".color-options li.selected");
@@ -191,14 +194,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!selectedColorEl) return alert("Please select a color.");
 
             Cart.addItem({
-                id: "standard-cape",
-                name: "Standard Cape",
-                price: 0.5,
+                id: id,
+                name: name,
+                price: price,
                 color: selectedColorEl.dataset.color,
                 quantity
             });
 
-            // Reset quantity to 1 (Standard UX)
             const selector = document.querySelector(".quantity-selector");
             if (selector) {
                 selector._quantity = 1;
