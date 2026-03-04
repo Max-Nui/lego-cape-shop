@@ -1,19 +1,15 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  // Only allow POST
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+  if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
 
   try {
     const { orderID, userEmail } = JSON.parse(event.body);
-
     const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
     const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
     const PAYPAL_API = 'https://api-m.sandbox.paypal.com';
 
-    // 1. Get Access Token from PayPal
+    // 1. Get Access Token
     const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
     const tokenResponse = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
       method: 'POST',
@@ -34,18 +30,28 @@ exports.handler = async (event) => {
     
     const orderData = await orderResponse.json();
 
-    // 3. Security: Check if email matches
-    // Note: PayPal sometimes puts email in 'payer' or 'purchase_units'
+    // --- DEBUGGING LOGS ---
+    console.log("--- TAILOR DEBUG START ---");
+    console.log("User Input Email:", userEmail.toLowerCase());
+    console.log("PayPal Full Payer Object:", JSON.stringify(orderData.payer));
+    // -----------------------
+
     const paypalEmail = orderData.payer?.email_address || "";
     
     if (paypalEmail.toLowerCase() !== userEmail.toLowerCase()) {
+      console.log("MISMATCH DETECTED:");
+      console.log(`Expected: ${paypalEmail.toLowerCase()}`);
+      console.log(`Received: ${userEmail.toLowerCase()}`);
+      
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: "Email/Order ID mismatch." })
+        body: JSON.stringify({ 
+            error: "Email/Order ID mismatch.",
+            debugPayerEmail: paypalEmail // Temporarily send this back to see it in the alert
+        })
       };
     }
 
-    // 4. Return the data to your website
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -55,9 +61,7 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
-    return { 
-      statusCode: 500, 
-      body: JSON.stringify({ error: "Internal Server Error" }) 
-    };
+    console.error("Function Error:", error);
+    return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
   }
 };
