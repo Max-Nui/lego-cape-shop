@@ -1,379 +1,265 @@
 //==================================================
 // CART CORE SETUP
 //==================================================
-const Cart = 
-{
+const Cart = {
     storageKey: "cart",
 
-    get() 
-    {
+    get() {
         return JSON.parse(localStorage.getItem(this.storageKey)) || [];
     },
 
-    set(cart) 
-    {
+    set(cart) {
         localStorage.setItem(this.storageKey, JSON.stringify(cart));
+    },
+
+    addItem({ id, name, price, color, quantity }) {
+        const cart = this.get();
+        const existing = cart.find(item => item.id === id && item.color === color);
+
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            cart.push({ id, name, price, color, quantity });
+        }
+        this.set(cart);
     }
 };
 
-//Add Item to Cart
-Cart.addItem = function ({id, name, price, color, quantity})
-{
-    const cart = this.get();
-
-    const existing = cart.find(item => item.id === id && item.color === color);
-
-    if(existing)
-    {
-        existing.quantity += quantity;
-    }
-    else
-    {
-        cart.push({id, name, price, color, quantity});
-    }
-    this.set(cart);
+//==================================================
+// UTILITY FUNCTIONS
+//==================================================
+function buildPayPalItems(cart) {
+    return cart.map(item => ({
+        name: `${item.name} (${item.color})`,
+        unit_amount: {
+            currency_code: "USD",
+            value: item.price.toFixed(2)
+        },
+        quantity: item.quantity.toString()
+    }));
 }
 
+function calculateCartTotal(cart) {
+    return cart.reduce((sum, item) => {
+        return sum + item.price * item.quantity;
+    }, 0).toFixed(2);
+}
 
-
-
+//==================================================
+// DOM CONTENT LOADED
+//==================================================
 document.addEventListener("DOMContentLoaded", () => {
-
     let paypalRendered = false;
 
-    // =====================================================
-    // HOME PAGE GALLERY (auto-advance)
-    // =====================================================
+    // --- HOME PAGE GALLERY ---
     const slides = document.querySelectorAll(".gallery img");
-
     if (slides.length > 0) {
         let homeIndex = 0;
-        const intervalTime = 10000; // 10 seconds
-
-        slides.forEach((slide, index) => {
-            slide.classList.toggle("active", index === 0);
-        });
-
+        slides.forEach((slide, index) => slide.classList.toggle("active", index === 0));
         setInterval(() => {
             slides[homeIndex].classList.remove("active");
             homeIndex = (homeIndex + 1) % slides.length;
             slides[homeIndex].classList.add("active");
-        }, intervalTime);
+        }, 10000);
     }
 
-    // =====================================================
-    // ITEM PAGE GALLERY (manual buttons)
-    // =====================================================
+    // --- ITEM PAGE GALLERY ---
     const itemGallery = document.querySelector(".item-gallery");
-
     if (itemGallery) {
         const images = itemGallery.querySelectorAll("img");
         const prevBtn = itemGallery.querySelector(".prev");
         const nextBtn = itemGallery.querySelector(".next");
-
         let itemIndex = 0;
 
         function showImage(index) {
-            images.forEach((img, i) => {
-                img.classList.toggle("active", i === index);
-            });
+            images.forEach((img, i) => img.classList.toggle("active", i === index));
         }
 
-        prevBtn.addEventListener("click", () => {
+        prevBtn?.addEventListener("click", () => {
             itemIndex = (itemIndex - 1 + images.length) % images.length;
             showImage(itemIndex);
         });
 
-        nextBtn.addEventListener("click", () => {
+        nextBtn?.addEventListener("click", () => {
             itemIndex = (itemIndex + 1) % images.length;
             showImage(itemIndex);
         });
     }
 
-
-    // =====================================================
-    // QUANTITY SELECTOR (DISPLAY-ONLY)
-    // =====================================================
+    // --- QUANTITY SELECTOR ---
     document.querySelectorAll(".quantity-selector").forEach(selector => {
         const valueEl = selector.querySelector(".qty-value");
-        const incrementBtn = selector.querySelector(".increment");
-        const decrementBtn = selector.querySelector(".decrement");
-
-        // Use a property on the element
         selector._quantity = parseInt(selector.dataset.qty, 10) || 1;
 
-        function updateDisplay() {
+        const updateDisplay = () => {
             valueEl.textContent = selector._quantity;
             selector.dataset.qty = selector._quantity;
-        }
+        };
 
-        incrementBtn.addEventListener("click", () => {
+        selector.querySelector(".increment")?.addEventListener("click", () => {
             selector._quantity += 1;
             updateDisplay();
         });
 
-        decrementBtn.addEventListener("click", () => {
+        selector.querySelector(".decrement")?.addEventListener("click", () => {
             if (selector._quantity > 1) {
                 selector._quantity -= 1;
                 updateDisplay();
             }
         });
-
         updateDisplay();
     });
 
-    // =====================================================
-    // COLOR SELECTOR
-    // =====================================================
+    // --- COLOR SELECTOR ---
     const colorList = document.querySelector(".color-options");
     const selectedColorText = document.querySelector(".selected-color-text strong");
-
     if (colorList && selectedColorText) {
-        let selectedColor = null;
-
         colorList.querySelectorAll("li").forEach(colorItem => {
             colorItem.addEventListener("click", () => {
-                // Remove previous selection
-                colorList.querySelectorAll("li").forEach(li =>
-                    li.classList.remove("selected")
-                );
-
-                // Set new selection
+                colorList.querySelectorAll("li").forEach(li => li.classList.remove("selected"));
                 colorItem.classList.add("selected");
-                selectedColor = colorItem.dataset.color;
-
-                // Update confirmation text
-                selectedColorText.textContent = selectedColor;
+                selectedColorText.textContent = colorItem.dataset.color;
             });
         });
     }
 
-    // =====================================================
-    // CART RENDERING
-    // =====================================================
-    function getCart() 
-    {
-        return Cart.get();
-    }
-
-    function renderCart() 
-    {
+    // --- CART RENDERING ---
+    function renderCart() {
         const cartItemsEl = document.querySelector(".cart-items");
         const totalEl = document.querySelector(".cart-total");
         const warningEl = document.querySelector(".cart-warning");
-
         if (!cartItemsEl || !totalEl) return;
 
-        const cart = getCart();
+        const cart = Cart.get();
         cartItemsEl.innerHTML = "";
-
         let total = 0;
 
         cart.forEach((item, index) => {
             const itemTotal = item.price * item.quantity;
             total += itemTotal;
-
             const row = document.createElement("div");
             row.className = "cart-item";
             row.innerHTML = `
                 <div class="cart-item-details">
-                <p><strong>${item.name}</strong></p>
-                <p>Color: ${item.color}</p>
-                <p>Qty: ${item.quantity}</p>
-                <p>$${itemTotal.toFixed(2)}</p>
+                    <p><strong>${item.name}</strong></p>
+                    <p>Color: ${item.color} | Qty: ${item.quantity}</p>
+                    <p>$${itemTotal.toFixed(2)}</p>
                 </div>
                 <button data-index="${index}" class="remove-item">Remove</button>
-                
             `;
-
             cartItemsEl.appendChild(row);
         });
 
         totalEl.textContent = `Total: $${total.toFixed(2)} USD`;
 
-        // Minimum order enforcement
         const paypalContainer = document.querySelector("#paypal-button-container");
-
         if (total < 5) {
             warningEl?.classList.remove("hidden");
-
-            // If PayPal is currently rendered, remove it
-            if (paypalRendered) {
-                paypalContainer.innerHTML = ""; // clears the button
+            if (paypalRendered && paypalContainer) {
+                paypalContainer.innerHTML = "";
                 paypalRendered = false;
             }
-
         } else {
             warningEl?.classList.add("hidden");
-
             if (!paypalRendered) {
                 renderPayPalButton();
                 paypalRendered = true;
             }
         }
-
-
         setupRemoveButtons();
     }
 
-    function setupRemoveButtons() 
-    {
+    function setupRemoveButtons() {
         document.querySelectorAll(".remove-item").forEach(btn => {
             btn.addEventListener("click", () => {
-                const index = btn.dataset.index;
-                const cart = getCart();
-                cart.splice(index, 1);
-                localStorage.setItem("cart", JSON.stringify(cart));
+                const cart = Cart.get();
+                cart.splice(btn.dataset.index, 1);
+                Cart.set(cart);
                 renderCart();
             });
         });
     }
 
+    // --- ADD TO CART ---
     const addToCartBtn = document.querySelector(".add-to-cart-button");
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener("click", () => {
+            const qtyVal = document.querySelector(".qty-value")?.textContent || "1";
+            const quantity = parseInt(qtyVal, 10);
+            const selectedColorEl = document.querySelector(".color-options li.selected");
 
-    if (addToCartBtn) 
-        {
-            addToCartBtn.addEventListener("click", () => {
-                const quantity = parseInt(
-                    document.querySelector(".qty-value").textContent,
-                    10
-                );
+            if (!selectedColorEl) return alert("Please select a color.");
 
-                const selectedColorEl =
-                    document.querySelector(".color-options li.selected");
-
-                if (!selectedColorEl) {
-                    alert("Please select a color.");
-                    return;
-                }
-
-                Cart.addItem({
-                    id: "standard-cape",
-                    name: "Standard Cape",
-                    price: 0.5,
-                    color: selectedColorEl.dataset.color,
-                    quantity
-                });
-
-                // Reset the quantity counter
-                const quantitySelector = document.querySelector(".quantity-selector");
-                const qtyValueEl = quantitySelector?.querySelector(".qty-value");
-
-                if (quantitySelector && qtyValueEl) {
-                    qtyValueEl.textContent = "0";
-                    quantitySelector.dataset.qty = 0;
-
-                    // IMPORTANT: also update the closure variable used by increment/decrement
-                    quantitySelector._quantity = 0;      // new property to track state
-                }
-
-                alert("Added to cart");
+            Cart.addItem({
+                id: "standard-cape",
+                name: "Standard Cape",
+                price: 0.5,
+                color: selectedColorEl.dataset.color,
+                quantity
             });
-        }
 
+            // Reset quantity to 1 (Standard UX)
+            const selector = document.querySelector(".quantity-selector");
+            if (selector) {
+                selector._quantity = 1;
+                selector.querySelector(".qty-value").textContent = "1";
+            }
+            alert("Added to cart!");
+        });
+    }
 
-       function buildPayPalItems(cart) 
-       {
-        return cart.map(item => ({
-                name: `${item.name} (${item.color})`,
-                unit_amount: {
-                    currency_code: "USD",
-                    value: item.price.toFixed(2)
-                },
-                quantity: item.quantity.toString()
-            }));
-        } 
-
-        function calculateCartTotal(cart) {
-            return cart.reduce((sum, item) => {
-                return sum + item.price * item.quantity;
-            }, 0).toFixed(2);
-        }
-
-
-    
-    //=====================================================================
-    //Paypal Render Function
-    //=====================================================================
+    // --- PAYPAL BUTTON RENDER ---
     function renderPayPalButton() {
         const container = document.querySelector("#paypal-button-container");
         if (!container || typeof paypal === "undefined") return;
-
-        // Clear previous button (important!)
         container.innerHTML = "";
 
         paypal.Buttons({
-            createOrder: function (data, actions) {
+            createOrder: (data, actions) => {
                 const cart = Cart.get();
-
-                if (cart.length === 0) {
-                    alert("Your cart is empty.");
-                    return;
-                }
-
-                const total = calculateCartTotal(cart);
-                const items = buildPayPalItems(cart);
-
                 return actions.order.create({
                     purchase_units: [{
                         amount: {
                             currency_code: "USD",
-                            value: total,
-                            breakdown: {
-                                item_total: {
-                                    currency_code: "USD",
-                                    value: total
-                                }
-                            }
+                            value: calculateCartTotal(cart),
+                            breakdown: { item_total: { currency_code: "USD", value: calculateCartTotal(cart) } }
                         },
-                        items: items
+                        items: buildPayPalItems(cart)
                     }]
                 });
             },
-
-            onApprove: function (data, actions) {
-                return actions.order.capture().then(function (details) {
-                    // This 'data.orderID' is the one you need for your Lookup tool!
-                    console.log("SUCCESS! Use this ID for Lookup:", data.orderID);
-                    
-                    alert(`Payment completed! Your Order ID is: ${data.orderID}`);
-
+            onApprove: (data, actions) => {
+                return actions.order.capture().then(details => {
+                    // Critical for Step 2: Show the User the ID they need
+                    alert(`Success! Your Order ID is: ${data.orderID}\nKeep this for your archives.`);
+                    console.log("Order ID for Lookup:", data.orderID);
                     Cart.set([]);
                     renderCart();
                 });
             },
-
-            onError: function (err) {
-                console.error("PayPal Checkout Error:", err);
-                alert("Something went wrong with the payment.");
+            onError: (err) => {
+                console.error("PayPal Error:", err);
+                alert("Payment could not be processed.");
             }
         }).render("#paypal-button-container");
-
     }
 
-    // =====================================================
-    // ORDER LOOKUP LOGIC
-    // =====================================================
+    // --- ORDER LOOKUP LOGIC (STEP 2 REWRITE) ---
     const lookupForm = document.getElementById('order-lookup-form');
-    
     if (lookupForm) {
         lookupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // 1. Grab values from your HTML form
             const orderID = document.getElementById('order-id').value.trim();
             const userEmail = document.getElementById('email').value.trim();
             const resultsDiv = document.getElementById('results');
             const statusText = document.getElementById('status-text');
             const itemsList = document.getElementById('items-list');
-
-            // Feedback for the user while they wait
             const submitBtn = lookupForm.querySelector('button');
+
             submitBtn.disabled = true;
             submitBtn.textContent = "Searching Archives...";
 
             try {
-                // 2. Call your Netlify Function
                 const response = await fetch('/.netlify/functions/lookup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -383,40 +269,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    // 3. Map PayPal's "COMPLETED" to your brand's voice
                     const statusMap = {
-                        'COMPLETED': 'Order Tailored & Shipped!',
-                        'APPROVED': 'Awaiting Tailoring',
-                        'PENDING': 'Processing Fabric'
+                        'COMPLETED': 'Order Tailored & Dispatched!',
+                        'APPROVED': 'Fabric Selected / Awaiting Tailoring',
+                        'CREATED': 'Pattern Drafted'
                     };
 
                     resultsDiv.style.display = 'block';
                     statusText.innerText = statusMap[data.status] || data.status;
 
-                    // 4. Format the items list nicely
                     if (data.items && data.items.length > 0) {
-                        const itemsHtml = data.items.map(item => 
-                            `<li>${item.quantity}x ${item.name}</li>`
-                        ).join('');
-                        itemsList.innerHTML = `<ul>${itemsHtml}</ul>`;
+                        itemsList.innerHTML = `<ul>${data.items.map(i => `<li>${i.quantity}x ${i.name}</li>`).join('')}</ul>`;
                     } else {
-                        itemsList.innerText = "Custom Order / Details Unavailable";
+                        itemsList.innerText = "Custom Order - Details in Transit";
                     }
-
                 } else {
-                    alert(data.error || "Order not found. Check your ID and email.");
+                    alert(data.error || "Order not found. Check credentials.");
                 }
             } catch (err) {
-                console.error("Lookup Error:", err);
-                alert("Technical error connecting to the tailor's database.");
+                alert("Technical error connecting to the workshop.");
             } finally {
-                // Reset button state
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Track My Order";
             }
         });
     }
-
 
     renderCart();
 });
