@@ -38,19 +38,15 @@ exports.handler = async (event) => {
 
     const paypalEmail = orderData.payer?.email_address || "";
     
-    if (paypalEmail.toLowerCase() !== userEmail.toLowerCase()) {
-      console.log("MISMATCH DETECTED:");
-      console.log(`Expected: ${paypalEmail.toLowerCase()}`);
-      console.log(`Received: ${userEmail.toLowerCase()}`);
-      
-      return {
+    // Inside lookup.js, find the mismatch block and change it to this:
+if (paypalEmail.toLowerCase() !== userEmail.toLowerCase()) {
+    return {
         statusCode: 403,
         body: JSON.stringify({ 
-            error: "Email/Order ID mismatch.",
-            debugPayerEmail: paypalEmail // Temporarily send this back to see it in the alert
+            error: `Email Mismatch. You entered: ${userEmail}. PayPal has: ${paypalEmail}` 
         })
-      };
-    }
+    };
+}
 
     return {
       statusCode: 200,
