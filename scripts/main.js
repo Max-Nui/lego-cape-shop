@@ -277,23 +277,29 @@ document.addEventListener("DOMContentLoaded", () => {
                         'CREATED': 'Pattern Drafted'
                     };
 
-                    resultsDiv.style.display = 'block';
-                    statusText.innerText = statusMap[data.status] || data.status;
+                    if (resultsDiv) resultsDiv.style.display = 'block';
+                    if (statusText) statusText.innerText = statusMap[data.status] || data.status;
+
+
 
                     const trackingDiv = document.getElementById('tracking-info'); // Ensure this ID exists in your HTML
-                    if (data.tracking) {
-                        trackingDiv.innerHTML = `
-                            <p><strong>Tracking:</strong> ${data.tracking.carrier} 
-                            <a href="${data.tracking.url}" target="_blank">${data.tracking.number}</a></p>
-                        `;
-                    } else {
-                        trackingDiv.innerHTML = `<p><em>Tracking will only generate if your package is over $50 USD. If your order qualifies, expect your tracking to appear once the package is shipped.</em></p>`;
+                    if (trackingDiv) {
+                        if (data.tracking) {
+                            trackingDiv.innerHTML = `
+                                <p><strong>Tracking:</strong> ${data.tracking.carrier} 
+                                <a href="${data.tracking.url}" target="_blank">${data.tracking.number}</a></p>
+                            `;
+                        } else {
+                            trackingDiv.innerHTML = `<p><em>Tracking will only generate if your package is over $50 USD. If your order qualifies, expect your tracking to appear once the package is shipped.</em></p>`;
+                        }
                     }
 
-                    if (data.items && data.items.length > 0) {
-                        itemsList.innerHTML = `<ul>${data.items.map(i => `<li>${i.quantity}x ${i.name}</li>`).join('')}</ul>`;
-                    } else {
-                        itemsList.innerText = "Custom Order - Details in Transit";
+                    if (itemsList) {
+                        if (data.items && data.items.length > 0) {
+                            itemsList.innerHTML = `<ul>${data.items.map(i => `<li>${i.quantity}x ${i.name}</li>`).join('')}</ul>`;
+                        } else {
+                            itemsList.innerText = "Custom Order - Details in Transit";
+                        }
                     }
                 } else {
                     alert(data.error || "Order not found. Check credentials.");
