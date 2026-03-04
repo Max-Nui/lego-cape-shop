@@ -333,7 +333,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             onApprove: function (data, actions) {
                 return actions.order.capture().then(function (details) {
-                    alert(`Payment completed by ${details.payer.name.given_name}`);
+                    // This 'data.orderID' is the one you need for your Lookup tool!
+                    console.log("SUCCESS! Use this ID for Lookup:", data.orderID);
+                    
+                    alert(`Payment completed! Your Order ID is: ${data.orderID}`);
 
                     Cart.set([]);
                     renderCart();
