@@ -7,8 +7,14 @@ exports.handler = async (event) => {
         const { orderID, userEmail } = JSON.parse(event.body);
         const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
         const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
-        const PAYPAL_API = 'https://api-m.sandbox.paypal.com';
+        
+        // Dynamic URL logic: Defaults to Live if not specified as sandbox
+        const isSandbox = process.env.PAYPAL_MODE === 'sandbox';
+        const PAYPAL_API = isSandbox 
+            ? 'https://api-m.sandbox.paypal.com' 
+            : 'https://api-m.paypal.com';
 
+        // 1. Get Access Token
         const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
         const tokenResponse = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
             method: 'POST',
@@ -20,6 +26,7 @@ exports.handler = async (event) => {
         });
         const { access_token } = await tokenResponse.json();
 
+        // 2. Fetch Order Details
         const orderResponse = await fetch(`${PAYPAL_API}/v2/checkout/orders/${orderID}`, {
             headers: { 'Authorization': `Bearer ${access_token}` }
         });
@@ -32,17 +39,7 @@ exports.handler = async (event) => {
             };
         }
 
-        if (orderData.status !== 'COMPLETED' && orderData.status !== 'APPROVED') {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ 
-                    status: "PENDING", 
-                    message: "This order is not yet finalized." 
-                })
-            };
-        }
-
-        // 1. Validate Email
+        // 3. Email Validation
         const paypalEmail = orderData.payer?.email_address || "";
         if (paypalEmail.toLowerCase() !== userEmail.toLowerCase()) {
             return {
@@ -51,16 +48,26 @@ exports.handler = async (event) => {
             };
         }
 
-        // 2. Return the Clean Data
+        // 4. Extract Tracking (PayPal stores this in the purchase_units)
+        // Note: tracking data only exists if you've added it to the transaction in PayPal
+        const purchaseUnit = orderData.purchase_units[0];
+        const trackingData = purchaseUnit.shipping?.trackings?.[0] || null;
+
         return {
             statusCode: 200,
             body: JSON.stringify({
                 status: orderData.status,
-                items: orderData.purchase_units[0].items || []
+                items: purchaseUnit.items || [],
+                tracking: trackingData ? {
+                    number: trackingData.tracking_number,
+                    carrier: trackingData.carrier,
+                    url: trackingData.tracking_number_url // Direct link to carrier site
+                } : null
             })
         };
 
     } catch (error) {
+        console.error("Lookup Error:", error);
         return { statusCode: 500, body: JSON.stringify({ error: "Server Error" }) };
     }
 };
