@@ -25,6 +25,23 @@ exports.handler = async (event) => {
         });
         const orderData = await orderResponse.json();
 
+        if (orderResponse.status === 404) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ error: "Order ID not found in archives." })
+            };
+        }
+
+        if (orderData.status !== 'COMPLETED' && orderData.status !== 'APPROVED') {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ 
+                    status: "PENDING", 
+                    message: "This order is not yet finalized." 
+                })
+            };
+        }
+
         // 1. Validate Email
         const paypalEmail = orderData.payer?.email_address || "";
         if (paypalEmail.toLowerCase() !== userEmail.toLowerCase()) {
