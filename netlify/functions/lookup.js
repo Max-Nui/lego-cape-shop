@@ -1,27 +1,14 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-    
-  // --- NEW: CONFIG BOOTSTRAP ---
-  // If the frontend calls this with GET, return the public config
-  if (event.httpMethod === "GET") {
-      return {
-          statusCode: 200,
-          body: JSON.stringify({
-              mode: process.env.PAYPAL_MODE || 'live',
-              clientID: process.env.PAYPAL_CLIENT_ID // Publicly needed for the SDK
-          })
-      };
-  }
-  
-  if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
+    if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
 
     try {
         const { orderID, userEmail } = JSON.parse(event.body);
         const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
         const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
         
-        // Check the mode: defaults to live unless 'sandbox' is explicitly set
+        // Dynamic URL logic: Defaults to Live if not specified as sandbox
         const isSandbox = process.env.PAYPAL_MODE === 'sandbox';
         const PAYPAL_API = isSandbox 
             ? 'https://api-m.sandbox.paypal.com' 
@@ -46,16 +33,23 @@ exports.handler = async (event) => {
         const orderData = await orderResponse.json();
 
         if (orderResponse.status === 404) {
-            return { statusCode: 404, body: JSON.stringify({ error: "Order not found." }) };
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ error: "Order ID not found in archives." })
+            };
         }
 
-        // 3. Validate Email
+        // 3. Email Validation
         const paypalEmail = orderData.payer?.email_address || "";
         if (paypalEmail.toLowerCase() !== userEmail.toLowerCase()) {
-            return { statusCode: 403, body: JSON.stringify({ error: "Email mismatch." }) };
+            return {
+                statusCode: 403,
+                body: JSON.stringify({ error: "Email/Order ID mismatch." })
+            };
         }
 
-        // 4. Extract Tracking (New Logic)
+        // 4. Extract Tracking (PayPal stores this in the purchase_units)
+        // Note: tracking data only exists if you've added it to the transaction in PayPal
         const purchaseUnit = orderData.purchase_units[0];
         const trackingData = purchaseUnit.shipping?.trackings?.[0] || null;
 
@@ -67,12 +61,13 @@ exports.handler = async (event) => {
                 tracking: trackingData ? {
                     number: trackingData.tracking_number,
                     carrier: trackingData.carrier,
-                    url: trackingData.tracking_number_url
+                    url: trackingData.tracking_number_url // Direct link to carrier site
                 } : null
             })
         };
 
     } catch (error) {
+        console.error("Lookup Error:", error);
         return { statusCode: 500, body: JSON.stringify({ error: "Server Error" }) };
     }
 };

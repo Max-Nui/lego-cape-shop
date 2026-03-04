@@ -48,35 +48,8 @@ function calculateCartTotal(cart) {
 //==================================================
 // DOM CONTENT LOADED
 //==================================================
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
     let paypalRendered = false;
-
-    // --- 1. DYNAMIC PAYPAL CONFIG ---
-    async function initPayPalSDK() {
-        try {
-            const response = await fetch('/.netlify/functions/lookup'); // The GET request
-            const config = await response.json();
-            
-            return new Promise((resolve) => {
-                const script = document.createElement("script");
-                // This builds the URL using the ID from your Netlify Env Var
-                script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientID}&currency=USD`;
-                script.onload = () => {
-                    console.log(`PayPal SDK loaded in ${config.mode} mode.`);
-                    resolve();
-                };
-                document.head.appendChild(script);
-            });
-        } catch (err) {
-            console.error("Failed to load PayPal config:", err);
-        }
-    }
-
-    // --- 2. CONDITIONALLY LOAD & RENDER ---
-    if (document.querySelector("#paypal-button-container")) {
-        await initPayPalSDK();
-        renderCart(); // Now safe to call because SDK is loaded
-    }
 
     // --- HOME PAGE GALLERY ---
     const slides = document.querySelectorAll(".gallery img");
@@ -274,54 +247,62 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // --- ORDER LOOKUP LOGIC (STEP 2 REWRITE) ---
-    
     const lookupForm = document.getElementById('order-lookup-form');
     if (lookupForm) {
         lookupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // ... previous setup code (IDs, resultsDiv, statusText, etc.) ...
+            const orderID = document.getElementById('order-id').value.trim();
+            const userEmail = document.getElementById('email').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const statusText = document.getElementById('status-text');
+            const itemsList = document.getElementById('items-list');
+            const submitBtn = lookupForm.querySelector('button');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Searching Archives...";
 
             try {
                 const response = await fetch('/.netlify/functions/lookup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        orderID: document.getElementById('order-id').value.trim(), 
-                        userEmail: document.getElementById('email').value.trim() 
-                    })
+                    body: JSON.stringify({ orderID, userEmail })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    resultsDiv.style.display = 'block';
-                    statusText.innerText = `Status: ${data.status}`;
+                    const statusMap = {
+                        'COMPLETED': 'Order Tailored & Dispatched!',
+                        'APPROVED': 'Fabric Selected / Awaiting Tailoring',
+                        'CREATED': 'Pattern Drafted'
+                    };
 
-                    // --- TRACKING DISPLAY ---
-                    const trackingList = document.getElementById('tracking-info'); // Make sure this <div> exists in HTML
+                    resultsDiv.style.display = 'block';
+                    statusText.innerText = statusMap[data.status] || data.status;
+
+                    const trackingDiv = document.getElementById('tracking-info'); // Ensure this ID exists in your HTML
                     if (data.tracking) {
-                        trackingList.innerHTML = `
-                            <div class="tracking-container">
-                                <p><strong>Tracking Number:</strong> ${data.tracking.number}</p>
-                                <p><strong>Carrier:</strong> ${data.tracking.carrier}</p>
-                                <a href="${data.tracking.url}" target="_blank" class="track-link">Track via Carrier Site</a>
-                            </div>
+                        trackingDiv.innerHTML = `
+                            <p><strong>Tracking:</strong> ${data.tracking.carrier} 
+                            <a href="${data.tracking.url}" target="_blank">${data.tracking.number}</a></p>
                         `;
                     } else {
-                        trackingList.innerHTML = `<p><em>Tailoring in progress. Tracking will appear once dispatched.</em></p>`;
+                        trackingDiv.innerHTML = `<p><em>Tracking will only generate if your package is over $50 USD. If your order qualifies, expect your tracking to appear once the package is shipped.</em></p>`;
                     }
 
-                    // --- ITEMS DISPLAY ---
-                    const itemsList = document.getElementById('items-list');
-                    itemsList.innerHTML = data.items.length > 0 
-                        ? `<ul>${data.items.map(i => `<li>${i.quantity}x ${i.name}</li>`).join('')}</ul>`
-                        : "Custom Order Details Pending";
-
+                    if (data.items && data.items.length > 0) {
+                        itemsList.innerHTML = `<ul>${data.items.map(i => `<li>${i.quantity}x ${i.name}</li>`).join('')}</ul>`;
+                    } else {
+                        itemsList.innerText = "Custom Order - Details in Transit";
+                    }
                 } else {
-                    alert(data.error || "Order not found.");
+                    alert(data.error || "Order not found. Check credentials.");
                 }
             } catch (err) {
                 alert("Technical error connecting to the workshop.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Track My Order";
             }
         });
     }
