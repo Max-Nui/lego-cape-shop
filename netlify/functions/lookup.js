@@ -30,23 +30,31 @@ exports.handler = async (event) => {
     
     const orderData = await orderResponse.json();
 
-    // --- DEBUGGING LOGS ---
-    console.log("--- TAILOR DEBUG START ---");
-    console.log("User Input Email:", userEmail.toLowerCase());
-    console.log("PayPal Full Payer Object:", JSON.stringify(orderData.payer));
-    // -----------------------
+    // --- DEEP SEARCH FOR EMAIL ---
+    const payerEmail = orderData.payer?.email_address;
+    const shippingEmail = orderData.purchase_units?.[0]?.shipping?.email_address;
+    const infoEmail = orderData.purchase_units?.[0]?.payee?.email_address;
 
-    const paypalEmail = orderData.payer?.email_address || "";
+    // Use whichever one we find first
+    const paypalEmail = (payerEmail || shippingEmail || infoEmail || "").toLowerCase();
     
-    // Inside lookup.js, find the mismatch block and change it to this:
-if (paypalEmail.toLowerCase() !== userEmail.toLowerCase()) {
-    return {
+    console.log("Found PayPal Email:", paypalEmail);
+
+    if (!paypalEmail) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: "PayPal did not return an email for this order record." })
+      };
+    }
+
+    if (paypalEmail !== userEmail.toLowerCase()) {
+      return {
         statusCode: 403,
         body: JSON.stringify({ 
             error: `Email Mismatch. You entered: ${userEmail}. PayPal has: ${paypalEmail}` 
         })
-    };
-}
+      };
+    }
 
     return {
       statusCode: 200,
