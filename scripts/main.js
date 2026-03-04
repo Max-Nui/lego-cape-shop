@@ -347,5 +347,73 @@ document.addEventListener("DOMContentLoaded", () => {
         }).render("#paypal-button-container");
 
     }
+
+    // =====================================================
+    // ORDER LOOKUP LOGIC
+    // =====================================================
+    const lookupForm = document.getElementById('order-lookup-form');
+    
+    if (lookupForm) {
+        lookupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 1. Grab values from your HTML form
+            const orderID = document.getElementById('order-id').value.trim();
+            const userEmail = document.getElementById('email').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const statusText = document.getElementById('status-text');
+            const itemsList = document.getElementById('items-list');
+
+            // Feedback for the user while they wait
+            const submitBtn = lookupForm.querySelector('button');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Searching Archives...";
+
+            try {
+                // 2. Call your Netlify Function
+                const response = await fetch('/.netlify/functions/lookup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderID, userEmail })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // 3. Map PayPal's "COMPLETED" to your brand's voice
+                    const statusMap = {
+                        'COMPLETED': 'Order Tailored & Shipped!',
+                        'APPROVED': 'Awaiting Tailoring',
+                        'PENDING': 'Processing Fabric'
+                    };
+
+                    resultsDiv.style.display = 'block';
+                    statusText.innerText = statusMap[data.status] || data.status;
+
+                    // 4. Format the items list nicely
+                    if (data.items && data.items.length > 0) {
+                        const itemsHtml = data.items.map(item => 
+                            `<li>${item.quantity}x ${item.name}</li>`
+                        ).join('');
+                        itemsList.innerHTML = `<ul>${itemsHtml}</ul>`;
+                    } else {
+                        itemsList.innerText = "Custom Order / Details Unavailable";
+                    }
+
+                } else {
+                    alert(data.error || "Order not found. Check your ID and email.");
+                }
+            } catch (err) {
+                console.error("Lookup Error:", err);
+                alert("Technical error connecting to the tailor's database.");
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Track My Order";
+            }
+        });
+    }
+
+
     renderCart();
 });

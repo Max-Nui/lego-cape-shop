@@ -1,0 +1,9 @@
+{
+  "name": "the-minifig-tailor",
+  "version": "1.0.0",
+  "description": "Custom tailoring for minifigs",
+  "main": "index.html",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
