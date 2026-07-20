@@ -139,6 +139,11 @@ body
             font-size: clamp(0.9rem, 1vw + 0.5rem, 1.1rem);
             font-family: 'Open Sans', system-ui, sans-serif;
         }
+        .centered
+        {
+            text-align: center;
+            justify-content: center;
+        }
         .gallery
         {
             aspect-ratio: 3/2;
