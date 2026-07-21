@@ -579,6 +579,7 @@ body
             display: block;
             margin-left: 15vw;
             margin-right: 15vw;
+            margin-bottom: 10vh;
             p 
             {
                 text-align: left;
@@ -595,7 +596,17 @@ body
             {
                 font-style: italic;
             }
-            
+            .img-gallery
+            {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                
+                img 
+                {
+                    width: 30vw;
+                }
+            }
         }
         form 
         {

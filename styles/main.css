@@ -463,6 +463,7 @@ body .main .info-text-block {
   display: block;
   margin-left: 15vw;
   margin-right: 15vw;
+  margin-bottom: 10vh;
 }
 body .main .info-text-block p {
   text-align: left;
@@ -472,6 +473,14 @@ body .main .info-text-block a p {
 }
 body .main .info-text-block .italics {
   font-style: italic;
+}
+body .main .info-text-block .img-gallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+body .main .info-text-block .img-gallery img {
+  width: 30vw;
 }
 body .main form {
   text-align: center;
