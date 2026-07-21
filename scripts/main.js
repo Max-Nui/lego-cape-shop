@@ -272,6 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const itemsList = document.getElementById('items-list');
             const trackingDiv = document.getElementById('tracking-info');
             const submitBtn = lookupForm.querySelector('button');
+            const idDisplayDiv = document.getElementById('id-display');
 
             submitBtn.disabled = true;
             submitBtn.textContent = "Searching Archives...";
