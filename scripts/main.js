@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     //TODO: Send both orderid and capture id to netlify backend database
 
                     Cart.set([]);
-                    window.location.href = '/pages/order-confirmation.html?order=${orderId}&tx=${captureId}'
+                    window.location.href = '/pages/order-confirmation.html?order=' + orderId + '&tx=' + captureId;
 
                     /*// Critical for Step 2: Show the User the ID they need
                     alert(`Success! Your Order ID is: ${data.orderID}\nKeep this for your archives.`);
