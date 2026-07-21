@@ -7,7 +7,6 @@ exports.handler = async (event) => {
 
     try {
         const body = JSON.parse(event.body);
-        // Accept either searchID or orderID from the request payload
         const rawID = body.searchID || body.orderID;
         const userEmail = body.userEmail;
 
@@ -22,7 +21,6 @@ exports.handler = async (event) => {
         const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
         const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
         
-        // Dynamic URL logic
         const isSandbox = process.env.PAYPAL_MODE === 'sandbox';
         const PAYPAL_API = isSandbox 
             ? 'https://api-m.sandbox.paypal.com' 
@@ -41,6 +39,7 @@ exports.handler = async (event) => {
         const { access_token } = await tokenResponse.json();
 
         let orderData = null;
+        let directCaptureID = null;
 
         // 2. Attempt 1: Fetch as Order ID
         const orderResponse = await fetch(`${PAYPAL_API}/v2/checkout/orders/${searchID}`, {
@@ -57,8 +56,8 @@ exports.handler = async (event) => {
 
             if (captureResponse.status === 200) {
                 const captureData = await captureResponse.json();
+                directCaptureID = captureData.id;
                 
-                // Extract parent Order link from PayPal's HATEOAS links array
                 const orderLink = captureData.links?.find(l => l.rel === 'up' || l.rel === 'order')?.href;
 
                 if (orderLink) {
@@ -72,7 +71,6 @@ exports.handler = async (event) => {
             }
         }
 
-        // If neither Order ID nor Capture ID matched
         if (!orderData) {
             return {
                 statusCode: 404,
@@ -89,13 +87,19 @@ exports.handler = async (event) => {
             };
         }
 
-        // 5. Extract Details & Tracking
+        // 5. Extract IDs, Details & Tracking
         const purchaseUnit = orderData.purchase_units?.[0] || {};
         const trackingData = purchaseUnit.shipping?.trackings?.[0] || null;
+
+        // Safely pull the transaction ID from the order's captures if not fetched directly
+        const transactionID = directCaptureID || purchaseUnit.payments?.captures?.[0]?.id || "N/A";
+        const orderID = orderData.id || "N/A";
 
         return {
             statusCode: 200,
             body: JSON.stringify({
+                orderID: orderID,
+                transactionID: transactionID,
                 status: orderData.status,
                 items: purchaseUnit.items || [],
                 tracking: trackingData ? {

@@ -296,6 +296,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (resultsDiv) resultsDiv.style.display = 'block';
                     if (statusText) statusText.innerText = statusMap[data.status] || data.status;
 
+                    // Optional: Render both returned IDs in your lookup UI
+                    const idDisplayDiv = document.getElementById('id-display');
+                    if (idDisplayDiv) {
+                        idDisplayDiv.innerHTML = `
+                            <p><strong>Order ID:</strong> ${data.orderID}</p>
+                            <p><strong>Transaction ID:</strong> ${data.transactionID}</p>
+                        `;
+                    }
+
                     if (trackingDiv) {
                         if (data.tracking) {
                             trackingDiv.innerHTML = `
