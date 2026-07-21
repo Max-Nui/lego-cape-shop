@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/main.css">
+    <title>Order Confirmation | The Minifig Tailor</title>
+</head>
+<body>
+    <div class="header">
+        <nav>
+            <a href="/index.html"><h1><span>T</span>he <span>M</span>inifig <span>T</span>ailor</h1></a>
+            <p>Precision tailoring for minifig-scale heroes!</p>
+            <ul>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/pages/capes.html">Capes</a></li>
+                <li><a href="/pages/hoods-collars.html">Hoods & Collars</a></li>
+                <li><a href="/pages/sails.html">Sails</a></li>
+                <li><a href="/pages/skirts.html">Skirts</a></li>
+                <li><a href="/pages/misc.html">Misc</a></li>
+                <li><a href="/pages/custom.html">Custom</a></li>
+                <li><a href="/pages/distributors.html">Distributors</a></li>
+                <li><a href="/pages/order-lookup.html">Order Lookup</a></li>
+                <li><a href="/pages/cart.html">Cart</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="main">
+        <h2>Huzzah! Order Confirmed</h2>
+        <p class="centered">Your custom gear is being prepared by our tailors.</p>
+        
+        <div class="confirmation-box info-text-block">
+            <h3>Order Reference Details</h3>
+            <p>Please save these details for your records. You can use either ID to check your order status later on our <strong>Order Lookup</strong> page.</p>
+            
+            <div class="detail-card">
+                <div class="detail-row">
+                    <span><strong>Order ID:</strong></span>
+                    <code id="display-order-id">Loading...</code>
+                    <button type="button" class="copy-btn" data-target="display-order-id">Copy</button>
+                </div>
+                <div class="detail-row">
+                    <span><strong>Transaction ID:</strong></span>
+                    <code id="display-tx-id">Loading...</code>
+                    <button type="button" class="copy-btn" data-target="display-tx-id">Copy</button>
+                </div>
+            </div>
+
+            <blockquote class="note">
+                💡 <strong>Tip:</strong> The Transaction ID above matches the receipt email sent to your PayPal email address.
+            </blockquote>
+
+            <div class="confirmation-actions">
+                <a href="/pages/order-lookup.html" class="action-btn">Go to Order Lookup</a>
+                <button type="button" onclick="window.print()" class="action-btn secondary">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>
+            <ul>
+                <li><img src="/images/theminifgtailorlogoclean.png" alt="Logo"></li>
+                <li><a href="/pages/informational/faq.html">FAQ</a></li>
+                <li><a href="/pages/informational/about-us.html">About Us</a></li>
+                <li><a href="/pages/informational/fabrics.html">Fabrics Used</a></li>
+                <li><a href="/pages/informational/shipping.html">Shipping</a></li>
+                <li><a href="/pages/informational/returns.html">Return Policy</a></li>
+                <li><a href="/pages/informational/disclaimer.html">Disclaimer</a></li>
+                <li><a href="/pages/informational/privacy.html">Privacy Policy</a></li>
+                <li><a href="/pages/informational/contact-us.html">Contact Us</a></li>
+                <li><img src="/images/theminifgtailorlogoclean.png" alt="Logo"></li>
+            </ul>
+        </div>
+        <div>
+            <p>LEGO, the brick configuration, and the minifigure are trademarks of the LEGO Group, which does not sponsor, authorise or endorse this website.</p>
+            <p>© 2026 The Minifig Tailor</p>
+        </div>
+    </div>
+    <script defer src="/scripts/main.js"></script>
+</body>
+</html>

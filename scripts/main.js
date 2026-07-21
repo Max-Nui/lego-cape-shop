@@ -232,11 +232,22 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             onApprove: (data, actions) => {
                 return actions.order.capture().then(details => {
-                    // Critical for Step 2: Show the User the ID they need
+                    const captureId = details.purchase_units[0].payments.captures[0].id;
+                    const orderId = data.orderID;
+
+                    console.log("Order ID:", orderId);
+                    console.log("Capture/Transaction ID:", captureId);
+
+                    //TODO: Send both orderid and capture id to netlify backend database
+
+                    Cart.set([]);
+                    window.location.href = '/pages/order-confirmation.html?order=${orderId}&tx=${captureId}'
+
+                    /*// Critical for Step 2: Show the User the ID they need
                     alert(`Success! Your Order ID is: ${data.orderID}\nKeep this for your archives.`);
                     console.log("Order ID for Lookup:", data.orderID);
                     Cart.set([]);
-                    renderCart();
+                    renderCart();*/
                 });
             },
             onError: (err) => {
@@ -310,6 +321,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Track My Order";
             }
+        });
+    }
+
+    // --- ORDER CONFIRMATION PAGE LOGIC ---
+    const confirmationBox = document.querySelector(".confirmation-box");
+    if (confirmationBox) {
+        // Read query params from URL: ?order=...&tx=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order') || 'Not Available';
+        const txId = urlParams.get('tx') || 'Not Available';
+
+        const orderEl = document.getElementById("display-order-id");
+        const txEl = document.getElementById("display-tx-id");
+
+        if (orderEl) orderEl.textContent = orderId;
+        if (txEl) txEl.textContent = txId;
+
+        // Clipboard Copy Handler
+        document.querySelectorAll(".copy-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetId = btn.dataset.target;
+                const textToCopy = document.getElementById(targetId)?.textContent;
+
+                if (textToCopy && textToCopy !== 'Not Available') {
+                    navigator.clipboard.writeText(textToCopy);
+                    const originalText = btn.textContent;
+                    btn.textContent = "Copied!";
+                    setTimeout(() => { btn.textContent = originalText; }, 1500);
+                }
+            });
         });
     }
 
