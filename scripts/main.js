@@ -46,10 +46,93 @@ function calculateCartTotal(cart) {
 }
 
 //==================================================
+// NAV CART & MINI-CART DROPDOWN LOGIC
+//==================================================
+function updateNavCart() {
+    const cart = Cart.get();
+    const countEl = document.querySelector(".cart-count");
+    const dropdownItemsEl = document.querySelector(".cart-dropdown-items");
+    const dropdownTotalEl = document.querySelector(".cart-dropdown-total");
+
+    // 1. Calculate total individual items (summing quantities)
+    const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    if (countEl) countEl.textContent = totalCount;
+
+    // 2. Render Mini-Cart Dropdown
+    if (dropdownItemsEl && dropdownTotalEl) {
+        dropdownItemsEl.innerHTML = "";
+        let total = 0;
+
+        if (cart.length === 0) {
+            dropdownItemsEl.innerHTML = `<p class="empty-msg">Your cart is empty.</p>`;
+        } else {
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const row = document.createElement("div");
+                row.className = "dropdown-item";
+                row.innerHTML = `
+                    <div class="item-info">
+                        <strong>${item.name}</strong>
+                        <span>Color: ${item.color} | Qty: ${item.quantity}</span>
+                    </div>
+                    <span class="item-price">$${itemTotal.toFixed(2)}</span>
+                `;
+                dropdownItemsEl.appendChild(row);
+            });
+        }
+
+        dropdownTotalEl.textContent = total.toFixed(2);
+    }
+}
+
+//==================================================
 // DOM CONTENT LOADED
 //==================================================
 document.addEventListener("DOMContentLoaded", () => {
     let paypalRendered = false;
+
+    // --- NAV CART & MINI-CART DROPDOWN LOGIC (NEW) ---
+    function updateNavCart() {
+        if (typeof Cart === "undefined") return;
+        const cart = Cart.get();
+        const countEl = document.querySelector(".cart-count");
+        const dropdownItemsEl = document.querySelector(".cart-dropdown-items");
+        const dropdownTotalEl = document.querySelector(".cart-dropdown-total");
+
+        // 1. Calculate total individual items (summing quantities)
+        const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        if (countEl) countEl.textContent = totalCount;
+
+        // 2. Render Mini-Cart Dropdown
+        if (dropdownItemsEl && dropdownTotalEl) {
+            dropdownItemsEl.innerHTML = "";
+            let total = 0;
+
+            if (cart.length === 0) {
+                dropdownItemsEl.innerHTML = `<p class="empty-msg">Your cart is empty.</p>`;
+            } else {
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+
+                    const row = document.createElement("div");
+                    row.className = "dropdown-item";
+                    row.innerHTML = `
+                        <div class="item-info">
+                            <strong>${item.name}</strong>
+                            <span>Color: ${item.color} | Qty: ${item.quantity}</span>
+                        </div>
+                        <span class="item-price">$${itemTotal.toFixed(2)}</span>
+                    `;
+                    dropdownItemsEl.appendChild(row);
+                });
+            }
+
+            dropdownTotalEl.textContent = total.toFixed(2);
+        }
+    }
 
     // --- HOME PAGE GALLERY ---
     const slides = document.querySelectorAll(".gallery img");
@@ -167,6 +250,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         setupRemoveButtons();
+        
+        // (UPDATED) Keep Navbar badge and dropdown in sync when cart page renders/changes
+        updateNavCart();
     }
 
     function setupRemoveButtons() {
@@ -176,11 +262,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 cart.splice(btn.dataset.index, 1);
                 Cart.set(cart);
                 renderCart();
+                updateNavCart(); // (UPDATED) Update navbar immediately when item is removed
             });
         });
     }
 
-    // --- ADD TO CART ---
+    // --- ADD TO CART (UPDATED) ---
     const addToCartBtn = document.querySelector(".add-to-cart-button");
     if (addToCartBtn) {
         addToCartBtn.addEventListener("click", () => {
@@ -206,7 +293,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 selector._quantity = 1;
                 selector.querySelector(".qty-value").textContent = "1";
             }
-            alert("Added to cart!");
+
+            // 1. Update Nav Badge & Dropdown immediately
+            updateNavCart();
+
+            // 2. Subtle button feedback instead of alert popup
+            const btnText = addToCartBtn.querySelector("h3") || addToCartBtn;
+            const originalText = btnText.textContent;
+            btnText.textContent = "Added to Cart!";
+            addToCartBtn.style.backgroundColor = "lightseagreen"; // Optional visual pop
+            addToCartBtn.style.color = "white";
+            
+            setTimeout(() => { 
+                btnText.textContent = originalText; 
+                addToCartBtn.style.backgroundColor = "";
+                addToCartBtn.style.color = "";
+            }, 1200);
         });
     }
 
@@ -242,12 +344,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     Cart.set([]);
                     window.location.href = '/pages/order-confirmation.html?order=' + orderId + '&tx=' + captureId;
-
-                    /*// Critical for Step 2: Show the User the ID they need
-                    alert(`Success! Your Order ID is: ${data.orderID}\nKeep this for your archives.`);
-                    console.log("Order ID for Lookup:", data.orderID);
-                    Cart.set([]);
-                    renderCart();*/
                 });
             },
             onError: (err) => {
@@ -298,7 +394,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (statusText) statusText.innerText = statusMap[data.status] || data.status;
 
                     // Optional: Render both returned IDs in your lookup UI
-                    const idDisplayDiv = document.getElementById('id-display');
                     if (idDisplayDiv) {
                         idDisplayDiv.innerHTML = `
                             <p><strong>Order ID:</strong> ${data.orderID}</p>
@@ -366,5 +461,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // --- INITIAL PAGE LOAD SYNC ---
     renderCart();
+    updateNavCart(); // (NEW) Ensures the navbar cart count and dropdown populate as soon as any page loads
 });
