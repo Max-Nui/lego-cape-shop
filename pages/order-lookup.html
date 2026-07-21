@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/main.css">
     <title>Order Lookup | The Minifig Tailor</title>
+</head>
 <body>
     <div class="header">
         <nav>
@@ -23,34 +24,35 @@
                 <li><a href="/pages/cart.html">Cart</a></li>
             </ul>
         </nav>
-        
     </div>
 
     <div class="main">
         <h2>Order Lookup</h2>
         <div class="info-text-block">
-            <p>Use the following form to look up your order information. You'll need your email used to make the order, as well as the order number sent to that email. If you have any issues locating your order, feel free to email the tailor at theminifigtailor@gmail.com and we should be able to get your issue resolved!</p>
+            <p>Enter your <strong>PayPal email</strong> and either your <strong>Order ID</strong> or <strong>Transaction ID</strong> below to check your order status. You can find these on your confirmation screen or PayPal email receipt.</p>
         </div>
+
         <form id="order-lookup-form">
-            <label for="order-id">Order ID (from Paypal receipt):</label>
-            <input type="text" id="order-id" name="order-id" required>
-            <label for="email">Paypal Email Address:</label>
-            <input type="email" id="email" name="email" required>
+            <label for="order-id">Order ID or Transaction ID:</label>
+            <input type="text" id="order-id" name="order-id" placeholder="e.g. 5O190127... or 1AB23456..." required>
+            
+            <label for="email">PayPal Email Address:</label>
+            <input type="email" id="email" name="email" placeholder="your-email@example.com" required>
+            
             <button type="submit">Track My Order</button>
         </form>
 
         <div id="results" style="display: none;">
             <h2>Order Status: <span id="status-text"></span></h2>
             <p>Items: <span id="items-list"></span></p>
-            <p>Tracking: <span id="tracking-info"></span></p>
+            <div id="tracking-info"></div>
         </div>
     </div>
-
 
     <div class="footer">
         <div>
             <ul>
-                <li><img src="/images/theminifgtailorlogoclean.png"></li>
+                <li><img src="/images/theminifgtailorlogoclean.png" alt="Logo"></li>
                 <li><a href="/pages/informational/faq.html">FAQ</a></li>
                 <li><a href="/pages/informational/about-us.html">About Us</a></li>
                 <li><a href="/pages/informational/fabrics.html">Fabrics Used</a></li>
@@ -59,11 +61,11 @@
                 <li><a href="/pages/informational/disclaimer.html">Disclaimer</a></li>
                 <li><a href="/pages/informational/privacy.html">Privacy Policy</a></li>
                 <li><a href="/pages/informational/contact-us.html">Contact Us</a></li>
-                <li><img src="/images/theminifgtailorlogoclean.png"></li>
+                <li><img src="/images/theminifgtailorlogoclean.png" alt="Logo"></li>
             </ul>
         </div>
         <div>
-            <p>LEGO, the brick configuration, and the minifigure are trademarks of the LEGO Group, which does not sponsor, authorise or endorse this website. </p>
+            <p>LEGO, the brick configuration, and the minifigure are trademarks of the LEGO Group, which does not sponsor, authorise or endorse this website.</p>
             <p>© 2026 The Minifig Tailor</p>
         </div>
     </div>

@@ -257,16 +257,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }).render("#paypal-button-container");
     }
 
-    // --- ORDER LOOKUP LOGIC (STEP 2 REWRITE) ---
+    // --- ORDER LOOKUP LOGIC ---
     const lookupForm = document.getElementById('order-lookup-form');
     if (lookupForm) {
         lookupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const orderID = document.getElementById('order-id').value.trim();
+            
+            // Grab either Order ID or Transaction ID typed into the field
+            const searchID = document.getElementById('order-id').value.trim();
             const userEmail = document.getElementById('email').value.trim();
+            
             const resultsDiv = document.getElementById('results');
             const statusText = document.getElementById('status-text');
             const itemsList = document.getElementById('items-list');
+            const trackingDiv = document.getElementById('tracking-info');
             const submitBtn = lookupForm.querySelector('button');
 
             submitBtn.disabled = true;
@@ -276,7 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch('/.netlify/functions/lookup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ orderID, userEmail })
+                    // Send searchID which can be orderID OR transactionID
+                    body: JSON.stringify({ searchID, orderID: searchID, userEmail }) 
                 });
 
                 const data = await response.json();
@@ -291,9 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (resultsDiv) resultsDiv.style.display = 'block';
                     if (statusText) statusText.innerText = statusMap[data.status] || data.status;
 
-
-
-                    const trackingDiv = document.getElementById('tracking-info'); // Ensure this ID exists in your HTML
                     if (trackingDiv) {
                         if (data.tracking) {
                             trackingDiv.innerHTML = `
@@ -301,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <a href="${data.tracking.url}" target="_blank">${data.tracking.number}</a></p>
                             `;
                         } else {
-                            trackingDiv.innerHTML = `<p><em>Tracking will only generate if your package is over $50 USD. If your order qualifies, expect your tracking to appear once the package is shipped.</em></p>`;
+                            trackingDiv.innerHTML = `<p><em>Tracking will generate once your package ships (orders over $50 USD qualify for free tracking).</em></p>`;
                         }
                     }
 
@@ -313,10 +315,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
                 } else {
-                    alert(data.error || "Order not found. Check credentials.");
+                    alert(data.error || "Order not found. Please verify your ID and email.");
                 }
             } catch (err) {
-                alert("Technical error connecting to the workshop.");
+                alert("Technical error connecting to the workshop backend.");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Track My Order";
