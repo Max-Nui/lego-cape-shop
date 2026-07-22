@@ -12,14 +12,24 @@ const Cart = {
         localStorage.setItem(this.storageKey, JSON.stringify(cart));
     },
 
-    addItem({ id, name, price, color, quantity }) {
-        const cart = this.get();
+    // Accept optional 'url' parameter
+    addItem({ id, name, price, color, quantity, url }) {
+        const cart = Cart.get();
         const existing = cart.find(item => item.id === id && item.color === color);
 
         if (existing) {
             existing.quantity += quantity;
+            // Backfill URL if missing from an older item entry
+            if (!existing.url && url) existing.url = url;
         } else {
-            cart.push({ id, name, price, color, quantity });
+            cart.push({ 
+                id, 
+                name, 
+                price, 
+                color, 
+                quantity, 
+                url: url || window.location.pathname 
+            });
         }
         this.set(cart);
     }
@@ -116,12 +126,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 cart.forEach(item => {
                     const itemTotal = item.price * item.quantity;
                     total += itemTotal;
+                    const itemUrl = item.url || "/pages/cart.html"; // Fallback URL
 
                     const row = document.createElement("div");
                     row.className = "dropdown-item";
                     row.innerHTML = `
                         <div class="item-info">
-                            <strong>${item.name}</strong>
+                            <a href="${itemUrl}"><strong>${item.name}</strong></a>
                             <span>Color: ${item.color} | Qty: ${item.quantity}</span>
                         </div>
                         <span class="item-price">$${itemTotal.toFixed(2)}</span>
@@ -217,21 +228,42 @@ document.addEventListener("DOMContentLoaded", () => {
         cartItemsEl.innerHTML = "";
         let total = 0;
 
-        cart.forEach((item, index) => {
-            const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-            const row = document.createElement("div");
-            row.className = "cart-item";
-            row.innerHTML = `
-                <div class="cart-item-details">
-                    <p><strong>${item.name}</strong></p>
-                    <p>Color: ${item.color} | Qty: ${item.quantity}</p>
-                    <p>$${itemTotal.toFixed(2)}</p>
-                </div>
-                <button data-index="${index}" class="remove-item">Remove</button>
+        if (cart.length === 0) {
+            cartItemsEl.innerHTML = `<p class="empty-cart-msg">Your cart is currently empty.</p>`;
+        } else {
+            // Optional: Header Row for desktop
+            const headerRow = document.createElement("div");
+            headerRow.className = "cart-header";
+            headerRow.innerHTML = `
+                <span>Item</span>
+                <span>Color</span>
+                <span>Qty</span>
+                <span>Price</span>
+                <span></span>
             `;
-            cartItemsEl.appendChild(row);
-        });
+            cartItemsEl.appendChild(headerRow);
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                const itemUrl = item.url || '#';
+
+                const row = document.createElement("div");
+                row.className = "cart-item";
+                row.innerHTML = `
+                    <div class="col-name">
+                        <a href="${itemUrl}"><strong>${item.name}</strong></a>
+                    </div>
+                    <div class="col-color">Color: ${item.color}</div>
+                    <div class="col-qty">Qty: ${item.quantity}</div>
+                    <div class="col-price">$${itemTotal.toFixed(2)}</div>
+                    <div class="col-action">
+                        <button data-index="${index}" class="remove-item">Remove</button>
+                    </div>
+                `;
+                cartItemsEl.appendChild(row);
+            });
+        }
 
         totalEl.textContent = `Total: $${total.toFixed(2)} USD`;
 
@@ -250,8 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         setupRemoveButtons();
-        
-        // (UPDATED) Keep Navbar badge and dropdown in sync when cart page renders/changes
         updateNavCart();
     }
 
@@ -267,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- ADD TO CART (UPDATED) ---
+    // --- ADD TO CART LISTENER ---
     const addToCartBtn = document.querySelector(".add-to-cart-button");
     if (addToCartBtn) {
         addToCartBtn.addEventListener("click", () => {
@@ -285,7 +315,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 name: name,
                 price: price,
                 color: selectedColorEl.dataset.color,
-                quantity
+                quantity,
+                url: window.location.pathname // Captures the exact product page path
             });
 
             const selector = document.querySelector(".quantity-selector");
@@ -294,14 +325,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 selector.querySelector(".qty-value").textContent = "1";
             }
 
-            // 1. Update Nav Badge & Dropdown immediately
             updateNavCart();
 
-            // 2. Subtle button feedback instead of alert popup
             const btnText = addToCartBtn.querySelector("h3") || addToCartBtn;
             const originalText = btnText.textContent;
             btnText.textContent = "Added to Cart!";
-            addToCartBtn.style.backgroundColor = "lightseagreen"; // Optional visual pop
+            addToCartBtn.style.backgroundColor = "lightseagreen";
             addToCartBtn.style.color = "white";
             
             setTimeout(() => { 

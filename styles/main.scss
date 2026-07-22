@@ -159,6 +159,17 @@ body
                                         color: #667;
                                         font-size: 0.9em;
                                     }
+                                    a 
+                                    {
+                                        color: #222;
+                                        text-decoration: none;
+
+                                        &:hover, &:active
+                                        {
+                                            color: orange;
+                                            text-decoration: underline;
+                                        }
+                                    }
                                 }
 
                                 .item-price
@@ -491,28 +502,120 @@ body
                 }
             }
         }
-        .cart-items
+        .cart-items 
         {
-            .cart-item
-            {
-                display: flex;
-                justify-content: center;
-                gap: 1vw;
-                .cart-item-details
-                {
-                    display: flex;
-                    gap: 1em;
-                    justify-content: center;
+            max-width: 800px;
+            margin: 2em auto;
+            padding: 0 1em;
+
+            .empty-cart-msg {
+                text-align: center;
+                font-family: 'Open Sans', system-ui, sans-serif;
+                color: #666;
+                font-style: italic;
+            }
+
+            // Header row for desktop alignment
+            .cart-header {
+                display: grid;
+                grid-template-columns: 2fr 1.2fr 0.8fr 1fr 100px;
+                align-items: center;
+                gap: 1em;
+                padding: 0.5em 1em;
+                font-family: 'Poor Richard', system-ui, sans-serif;
+                font-weight: bold;
+                text-transform: uppercase;
+                border-bottom: 2px solid lightseagreen;
+                font-size: 1.1em;
+
+                @media (max-width: 650px) {
+                    display: none; // Hide column header on mobile screens
                 }
-                .remove-item
-                {
-                    background-color: crimson;
-                    color: white;
-                    border: none;
-                    padding: 0.3em 1em;
-                    cursor: pointer;
-                    font-family: 'Open Sans', system-ui, sans-serif;
-                    text-transform: uppercase;
+            }
+
+            // Individual item row
+            .cart-item {
+                display: grid;
+                // Defined column template: Name, Color, Qty, Price, Remove Button
+                grid-template-columns: 2fr 1.2fr 0.8fr 1fr 100px;
+                align-items: center;
+                gap: 1em;
+                padding: 0.8em 1em;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                font-family: 'Open Sans', system-ui, sans-serif;
+                font-size: 0.95rem;
+
+                .col-name {
+                    text-align: left;
+
+                    a 
+                    {
+                        color: #222;
+                        text-decoration: none;
+                        transition: color 0.15s ease;
+
+                        &:hover, &:active
+                        {
+                            color: orange;
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                .col-color, .col-qty {
+                    color: #444;
+                }
+
+                .col-price {
+                    font-weight: bold;
+                    color: #222;
+                }
+
+                .col-action {
+                    text-align: right;
+
+                    .remove-item {
+                        background-color: crimson;
+                        color: white;
+                        border: none;
+                        padding: 0.3em 0.8em;
+                        cursor: pointer;
+                        font-family: 'Open Sans', system-ui, sans-serif;
+                        text-transform: uppercase;
+                        font-size: 0.8em;
+                        border-radius: 3px;
+                        transition: background-color 0.2s ease;
+
+                        &:hover {
+                            background-color: darken(crimson, 10%);
+                        }
+                    }
+                }
+
+                // Mobile responsiveness
+                @media (max-width: 650px) {
+                    grid-template-columns: 1fr 1fr;
+                    row-gap: 0.5em;
+                    padding: 1em;
+                    background: rgba(255, 255, 255, 0.5);
+                    margin-bottom: 0.8em;
+                    border-radius: 4px;
+
+                    .col-name {
+                        grid-column: span 2;
+                        font-size: 1.05rem;
+                    }
+
+                    .col-action {
+                        grid-column: span 2;
+                        text-align: center;
+                        margin-top: 0.5em;
+
+                        .remove-item {
+                            width: 100%;
+                            padding: 0.5em;
+                        }
+                    }
                 }
             }
         }
